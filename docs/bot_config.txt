@@ -1,0 +1,3 @@
+name:YogaMasterMindBot
+url:t.me/yoga_master_mind_bot
+token:6697327045:AAEVrbOzL5kZbYXufsFbl9ecuLeOqRmb0Jw

@@ -1,0 +1,25 @@
+[tool.poetry]
+name = "tg-bot-aiogram3"
+version = "0.1.0"
+description = ""
+authors = ["Dmitri Khassanov <khdmitri@yahoo.com>"]
+readme = "README.md"
+packages = [{include = "tg_bot_aiogram3"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+aiogram = "^3.3.0"
+python-dotenv = "^1.0.0"
+pydantic-settings = "^2.1.0"
+redis = "^5.0.1"
+aiojobs = "^1.2.1"
+asyncpg = "^0.29.0"
+orjson = "^3.9.10"
+structlog = "^24.1.0"
+tenacity = "^8.2.3"
+environs = "^10.2.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
