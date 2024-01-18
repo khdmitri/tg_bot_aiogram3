@@ -7,3 +7,5 @@ client64_19.17/
 .idea/*
 alembic/*
 media/*
+venv/
+__pycache__/

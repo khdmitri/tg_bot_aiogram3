@@ -6,6 +6,7 @@ import orjson
 import redis
 import structlog
 import tenacity
+from _testcapi import DBL_MIN
 from aiogram import Bot, Dispatcher
 from aiogram.client.session.aiohttp import AiohttpSession
 from aiogram.client.telegram import TelegramAPIServer
@@ -17,28 +18,32 @@ import handlers
 import utils
 import web_handlers
 from data import config
+from keyboards.set_menu import set_main_menu
 from middlewares import StructLoggingMiddleware
+from middlewares.db import UserMiddleware
+from middlewares.message_logger import MessageLoggerMiddleware
+from middlewares.throttling import ThrottlingMiddleware
 
 
 async def create_db_connections(dp: Dispatcher) -> None:
     logger: structlog.typing.FilteringBoundLogger = dp["business_logger"]
 
-    logger.debug("Connecting to PostgreSQL", db="main")
-    try:
-        db_pool = await utils.connect_to_services.wait_postgres(
-            logger=dp["db_logger"],
-            host=config.PG_HOST,
-            port=config.PG_PORT,
-            user=config.PG_USER,
-            password=config.PG_PASSWORD,
-            database=config.PG_DATABASE,
-        )
-        dp["db_pool"] = db_pool
-    except tenacity.RetryError:
-        logger.error("Failed to connect to PostgreSQL", db="main")
-        exit(1)
-    else:
-        logger.debug("Succesfully connected to PostgreSQL", db="main")
+    # logger.debug("Connecting to PostgreSQL", db="main")
+    # try:
+    #     db_pool = await utils.connect_to_services.wait_postgres(
+    #         logger=dp["db_logger"],
+    #         host=config.PG_HOST,
+    #         port=config.PG_PORT,
+    #         user=config.PG_USER,
+    #         password=config.PG_PASSWORD,
+    #         database=config.PG_DATABASE,
+    #     )
+    #     dp["db_pool"] = db_pool
+    # except tenacity.RetryError:
+    #     logger.error("Failed to connect to PostgreSQL", db="main")
+    #     exit(1)
+    # else:
+    #     logger.debug("Succesfully connected to PostgreSQL", db="main")
 
     if config.USE_CACHE:
         logger.debug("Connecting to Redis")
@@ -80,20 +85,29 @@ async def close_db_connections(dp: Dispatcher) -> None:
     if "temp_bot_local_session" in dp.workflow_data:
         temp_bot_local_session: AiohttpSession = dp["temp_bot_local_session"]
         await temp_bot_local_session.close()
-    if "db_pool" in dp.workflow_data:
-        db_pool: asyncpg.Pool = dp["db_pool"]
-        await db_pool.close()
+    # if "db_pool" in dp.workflow_data:
+    #     db_pool: asyncpg.Pool = dp["db_pool"]
+    #     await db_pool.close()
     if "cache_pool" in dp.workflow_data:
         cache_pool: redis.asyncio.Redis = dp["cache_pool"]  # type: ignore[type-arg]
-        await cache_pool.close()
+        await cache_pool.aclose()
 
 
 def setup_handlers(dp: Dispatcher) -> None:
     dp.include_router(handlers.user.prepare_router())
+    dp.include_router(handlers.admin.prepare_router())
 
 
 def setup_middlewares(dp: Dispatcher) -> None:
     dp.update.outer_middleware(StructLoggingMiddleware(logger=dp["aiogram_logger"]))
+    dp.update.middleware(UserMiddleware())
+    dp.message.outer_middleware(ThrottlingMiddleware(redis=Redis(
+        host=config.FSM_HOST,
+        password=config.FSM_PASSWORD,
+        port=config.FSM_PORT,
+        db=0,
+    )))
+    dp.update.middleware(MessageLoggerMiddleware())
 
 
 def setup_logging(dp: Dispatcher) -> None:
@@ -166,6 +180,7 @@ async def aiogram_on_startup_polling(dispatcher: Dispatcher, bot: Bot) -> None:
     await bot.delete_webhook(drop_pending_updates=True)
     await setup_aiogram(dispatcher)
     dispatcher["aiogram_logger"].info("Started polling")
+    await set_main_menu(bot)
 
 
 async def aiogram_on_shutdown_polling(dispatcher: Dispatcher, bot: Bot) -> None:
@@ -195,7 +210,8 @@ async def setup_aiohttp_app(bot: Bot, dp: Dispatcher) -> web.Application:
     return app
 
 
-def main() -> None:
+async def main() -> None:
+    # await async_main()
     aiogram_session_logger = utils.logging.setup_logger().bind(type="aiogram_session")
 
     if config.USE_CUSTOM_API_SERVER:
@@ -214,7 +230,6 @@ def main() -> None:
             logger=aiogram_session_logger,
         )
     bot = Bot(config.BOT_TOKEN, parse_mode="HTML", session=session)
-
     dp = Dispatcher(
         storage=RedisStorage(
             redis=Redis(
@@ -228,20 +243,20 @@ def main() -> None:
     )
     dp["aiogram_session_logger"] = aiogram_session_logger
 
-    if config.USE_WEBHOOK:
-        dp.startup.register(aiogram_on_startup_webhook)
-        dp.shutdown.register(aiogram_on_shutdown_webhook)
-        web.run_app(
-            asyncio.run(setup_aiohttp_app(bot, dp)),
-            handle_signals=True,
-            host=config.MAIN_WEBHOOK_LISTENING_HOST,
-            port=config.MAIN_WEBHOOK_LISTENING_PORT,
-        )
-    else:
-        dp.startup.register(aiogram_on_startup_polling)
-        dp.shutdown.register(aiogram_on_shutdown_polling)
-        asyncio.run(dp.start_polling(bot))
+    # if config.USE_WEBHOOK:
+    #     dp.startup.register(aiogram_on_startup_webhook)
+    #     dp.shutdown.register(aiogram_on_shutdown_webhook)
+    #     web.run_app(
+    #         asyncio.run(setup_aiohttp_app(bot, dp)),
+    #         handle_signals=True,
+    #         host=config.MAIN_WEBHOOK_LISTENING_HOST,
+    #         port=config.MAIN_WEBHOOK_LISTENING_PORT,
+    #     )
+    # else:
+    dp.startup.register(aiogram_on_startup_polling)
+    dp.shutdown.register(aiogram_on_shutdown_polling)
+    await dp.start_polling(bot)
 
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
