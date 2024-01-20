@@ -4,15 +4,17 @@ from typing import Optional, List
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
 
-from crud import crud_practise
+from crud import crud_practise, crud_media
 from db.session import SessionLocalAsync
 from keyboards.inline import practise_menu_keyboard
-from keyboards.inline.practise_menu import PractiseStartMenuKeyboard
+from keyboards.inline.practise_menu import PractiseStartMenuKeyboard, PractiseLessonMenuKeyboard
 from lexicon.lexicon_ru import LEXICON_BTN_GROUP_LABELS_RU, LEXICON_CHAPTER_LABELS_RU, LEXICON_DEFAULT_NAMES_RU
 from models.practise import Practise
 from schemas.practise import PractiseCreate, PractiseUpdate
 from states.admin import PractiseMenu
 from utils import message_logger, log_message, text_decorator
+from utils.db_utils import swap_orders
+from utils.handler import prepare_context
 
 
 async def manage_practises(callback: CallbackQuery, state: FSMContext) -> None:
@@ -75,11 +77,7 @@ async def edit_practise(callback: CallbackQuery | Message, state: FSMContext) ->
         practise_dict = data.get("edit_practise", None)
         practise_id = practise_dict["id"]
 
-    # Изменяем состояние на home
-    await state.set_state(PractiseMenu.edit)
-    # Чистим контент прошлого состояния
-    await message_logger.log_message.clean_content(msg.chat.id, msg)
-    # Пишем название раздела
+    await prepare_context(state, PractiseMenu.edit, msg)
     await log_message.add_message(await msg.answer(
         text=text_decorator.strong(LEXICON_CHAPTER_LABELS_RU['edit_practise']))
                                   )
@@ -90,16 +88,26 @@ async def edit_practise(callback: CallbackQuery | Message, state: FSMContext) ->
             await show_practise(msg, practise.as_dict())
 
 
+async def practise_lessons_swap(callback: CallbackQuery, state: FSMContext) -> None:
+    practises_swap_ids = [int(callback.data.split(":")[1]), int(callback.data.split(":")[2])]
+    if practises_swap_ids[0] > 0:
+        async with SessionLocalAsync() as db:
+            await swap_orders(db, practises_swap_ids, crud_practise)
+
+    await callback.answer(text=LEXICON_DEFAULT_NAMES_RU['success_swap'])
+    await manage_practises(callback, state)
+
+
 async def show_practise(message: Message, practise: dict):
     await log_message.add_message(await message.answer(text=text_decorator.italic(LEXICON_DEFAULT_NAMES_RU['title'])))
     await log_message.add_message(await message.answer(
-        text=text_decorator.strong(practise.get("title", "")),
+        text=text_decorator.strong(text_decorator.not_empty(practise.get("title", "-"))),
         reply_markup=practise_menu_keyboard.get_change_title_keyboard()
     ))
 
     await log_message.add_message(await message.answer(text=text_decorator.italic(LEXICON_DEFAULT_NAMES_RU['description'])))
     await log_message.add_message(await message.answer(
-        text=text_decorator.strong(practise.get("description", "")),
+        text=text_decorator.strong(text_decorator.not_empty(practise.get("description", "-"))),
         reply_markup=practise_menu_keyboard.get_change_description_keyboard()
     ))
 
@@ -109,7 +117,7 @@ async def show_practise(message: Message, practise: dict):
             await log_message.add_message(await message.answer_photo(
                 practise["media_file_id"],
                 reply_markup=practise_menu_keyboard.get_change_media_keyboard()))
-        case "photo":
+        case "video":
             await log_message.add_message(await message.answer_video(
                 practise["media_file_id"],
                 reply_markup=practise_menu_keyboard.get_change_media_keyboard()))
@@ -119,10 +127,36 @@ async def show_practise(message: Message, practise: dict):
                 reply_markup=practise_menu_keyboard.get_change_media_keyboard()
             ))
 
+    async with SessionLocalAsync() as db:
+        lessons = await crud_media.get_multi_by_practise_id(db, practise_id=practise['id'])
+        await log_message.add_message(await message.answer(
+            text=text_decorator.strong(LEXICON_DEFAULT_NAMES_RU['lessons']),
+            reply_markup=PractiseLessonMenuKeyboard(lessons).get_keyboard()
+        ))
+
+    if practise["is_published"]:
+        text = LEXICON_DEFAULT_NAMES_RU['practise_content_published']
+    else:
+        text = LEXICON_DEFAULT_NAMES_RU['practise_content_not_published']
+
+    await log_message.add_message(await message.answer(
+        text=text_decorator.strong(text),
+        reply_markup=practise_menu_keyboard.get_change_publish_keyboard()
+    ))
+
     await log_message.add_message(await message.answer(
         text=LEXICON_DEFAULT_NAMES_RU['practise_navigation_menu'],
         reply_markup=practise_menu_keyboard.get_back_to_list_keyboard()
     ))
+
+
+async def practise_change_publish_prompt(callback: CallbackQuery, state: FSMContext) -> None:
+    data = await state.get_data()
+    practise_dict = data.get("edit_practise", None)
+
+    practise_dict['is_published'] = not practise_dict['is_published']
+
+    await update_practise(practise_dict, callback.message, state)
 
 
 async def practise_change_title_prompt(callback: CallbackQuery, state: FSMContext) -> None:
@@ -147,7 +181,7 @@ async def practise_change_description_prompt(callback: CallbackQuery, state: FSM
     await state.set_state(PractiseMenu.change_description)
 
     text_decorator.strong(text_decorator.italic(await log_message.add_message(await callback.message.answer(
-        text=LEXICON_DEFAULT_NAMES_RU['practise_change_decription'],
+        text=LEXICON_DEFAULT_NAMES_RU['practise_change_description'],
         reply_markup=practise_menu_keyboard.get_cancel_change_keyboard()
     ))))
 
@@ -161,7 +195,7 @@ async def practise_change_description_save(message: Message, state: FSMContext) 
 
 async def practise_change_media_prompt(callback: CallbackQuery, state: FSMContext) -> None:
     # Изменяем состояние на home
-    await state.set_state(PractiseMenu.change_description)
+    await state.set_state(PractiseMenu.change_media)
 
     text_decorator.strong(text_decorator.italic(await log_message.add_message(await callback.message.answer(
         text=LEXICON_DEFAULT_NAMES_RU['practise_change_media'],

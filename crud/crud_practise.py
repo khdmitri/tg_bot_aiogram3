@@ -11,9 +11,15 @@ from schemas.practise import PractiseCreate, PractiseUpdate
 class CRUDPractise(CRUDBase[Practise, PractiseCreate, PractiseUpdate]):
     async def get_practises_by_order(
             self,
-            db: AsyncSession
+            db: AsyncSession,
+            only_published: bool = False
     ) -> List[ModelType]:
-        result = await db.execute(select(self.model).order_by(self.model.order))
+        if only_published:
+            result = await db.execute(select(self.model).filter(self.model.is_published.is_(True)).order_by(
+                self.model.order)
+            )
+        else:
+            result = await db.execute(select(self.model).order_by(self.model.order))
         return result.scalars().all()
 
     async def get_last_order(self, db: AsyncSession) -> int:

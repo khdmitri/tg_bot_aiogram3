@@ -28,5 +28,6 @@ class Practise(Base):
             "description": self.description,
             "media_type": self.media_type,
             "media_file_id": self.media_file_id,
-            "thumbs": self.thumbs
+            "thumbs": self.thumbs,
+            "is_published": self.is_published,
         }

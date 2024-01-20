@@ -1,5 +1,6 @@
 import aiogram.types
 
+from lexicon.lexicon_ru import LEXICON_BASIC_BTNS_RU
 from .consts import DefaultConstructor
 
 
@@ -7,7 +8,7 @@ class BasicButtons(DefaultConstructor):
     @staticmethod
     def back() -> aiogram.types.ReplyKeyboardMarkup:
         schema = [1]
-        btns = ["◀️Назад"]
+        btns = [LEXICON_BASIC_BTNS_RU["back"]]
         return BasicButtons._create_kb(btns, schema)
 
     @staticmethod

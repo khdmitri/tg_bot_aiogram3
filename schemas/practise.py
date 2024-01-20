@@ -36,6 +36,7 @@ class PractiseBase(BaseModel):
     media_file_id: Optional[str]
     media_type: Optional[str]
     thumbs: Optional[str]
+    is_published: bool = False
 
 
 class PractiseCreate(PractiseBase):

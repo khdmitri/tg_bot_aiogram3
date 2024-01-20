@@ -29,16 +29,18 @@ async def start(msg: types.Message, state: FSMContext, user: dict) -> None:
     await state.set_state(states.user.UserMainMenu.menu)
 
 
-async def home(callback: types.CallbackQuery, state: FSMContext, user: dict) -> None:
-    # Чистим контент прошлого состояния
-    await message_logger.log_message.clean_content(callback.message.chat.id, callback.message)
+async def home(event: types.CallbackQuery | types.Message, state: FSMContext, user: dict) -> None:
+    message = event if isinstance(event, types.Message) else event.message
 
-    await log_message.add_message(await callback.message.answer(
+    # Чистим контент прошлого состояния
+    await message_logger.log_message.clean_content(message.chat.id, message)
+
+    await log_message.add_message(await message.answer(
         text=text_decorator.strong(LEXICON_CHAPTER_LABELS_RU['home']))
                                   )
-    await log_message.add_message(await callback.message.answer(
+    await log_message.add_message(await message.answer(
         text=LEXICON_BTN_GROUP_LABELS_RU['start_menu'],
         reply_markup=get_start_menu_keyboard(is_admin=user["is_admin"]))
     )
-    # print(answer)
+
     await state.set_state(states.user.UserMainMenu.menu)

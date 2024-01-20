@@ -38,11 +38,10 @@ class MediaBase(BaseModel):
     free_content_file_id: Optional[str]
     comm_content_file_id: Optional[str]
     order: int
-    media_type: str
+    media_type: Optional[str]
     title: Optional[str]
     category: Optional[str]
     description: Optional[str]
-    thumbs: Optional[str]
     cost: Optional[int]
 
 
