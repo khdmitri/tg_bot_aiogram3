@@ -257,10 +257,10 @@ async def media_change_media_save(message: Message, state: FSMContext) -> None:
         await message.delete()
     elif message.video:
         media_dict['media_type'] = MessageTypes.VIDEO.value
-        media_dict['media_file_id'] = message.video.file_id
+        media_dict['free_content_file_id'] = message.video.file_id
     elif message.photo:
         media_dict['media_type'] = MessageTypes.PHOTO.value
-        media_dict['media_file_id'] = message.photo[-1].file_id
+        media_dict['free_content_file_id'] = message.photo[-1].file_id
     else:
         media_dict['media_type'] = MessageTypes.TEXT_MESSAGE.value
         media_dict['text'] = message.text
