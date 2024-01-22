@@ -3,16 +3,19 @@ import traceback
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
 
-from crud import crud_media
+from crud import crud_media, crud_media_group
 from db.session import SessionLocalAsync
 from handlers.admin.practise import edit_practise
 from keyboards.inline.media_menu import MediaMenuKeyboard
 from lexicon.lexicon_ru import LEXICON_DEFAULT_NAMES_RU, LEXICON_CHAPTER_LABELS_RU, LEXICON_MEDIA_CATEGORIES_RU
 from middlewares import message_logger
+from schemas import MediaGroupCreate
 from schemas.media import MediaCreate, MediaUpdate
 from states.admin import MediaMenu
 from utils import log_message, text_decorator
+from utils.constants import MessageTypes
 from utils.db_utils import swap_orders
+from utils.handler import prepare_media_group
 
 
 async def add_media(callback: CallbackQuery | Message, state: FSMContext) -> None:
@@ -32,7 +35,7 @@ async def add_media(callback: CallbackQuery | Message, state: FSMContext) -> Non
             "free_content_file_id": None,
             "comm_content_file_id": None,
             "cost": 0,
-            "media_type": None,
+            "media_type": MessageTypes.NOT_DEFINED.value,
             "category": LEXICON_MEDIA_CATEGORIES_RU['any'],
         }
         new_media = MediaCreate(**new_media)
@@ -93,16 +96,21 @@ async def show_media(message: Message, media: dict, state: FSMContext):
 
     await log_message.add_message(
         await message.answer(text=text_decorator.italic(LEXICON_DEFAULT_NAMES_RU['media_content'])))
-    match media.get("media_type", ""):
-        case "photo":
+    match media.get("media_type", MessageTypes.NOT_DEFINED.value):
+        case MessageTypes.PHOTO.value:
             await log_message.add_message(await message.answer_photo(
                 media["free_content_file_id"],
                 reply_markup=media_menu_keyboard.get_change_media_keyboard()))
-        case "video":
+        case MessageTypes.VIDEO.value:
             await log_message.add_message(await message.answer_video(
                 media["free_content_file_id"],
                 reply_markup=media_menu_keyboard.get_change_media_keyboard()))
-        case _:
+        case MessageTypes.MEDIA_GROUP.value:
+            await log_message.add_message(await message.answer_media_group(
+                media=await prepare_media_group(media["media_group_id"]),
+                reply_markup=media_menu_keyboard.get_change_media_keyboard())
+            )
+        case MessageTypes.NOT_DEFINED.value:
             await log_message.add_message(await message.answer(
                 text=LEXICON_DEFAULT_NAMES_RU['media_content_empty'],
                 reply_markup=media_menu_keyboard.get_change_media_keyboard()
@@ -229,13 +237,39 @@ async def media_lessons_swap(callback: CallbackQuery, state: FSMContext) -> None
 async def media_change_media_save(message: Message, state: FSMContext) -> None:
     data = await state.get_data()
     media_dict = data.get("edit_media", None)
-    if message.video:
-        media_dict['media_type'] = "video"
-        media_dict['free_content_file_id'] = message.video.file_id
+    if message.media_group_id:
+        async with SessionLocalAsync() as db:
+            media = await crud_media.update_media_group_id(db, media_dict["id"], int(message.media_group_id))
+            media_dict = media.as_dict()
+            await state.update_data(edit_post=media_dict)
+            media_type = MessageTypes.NOT_DEFINED.value
+            media_file_id = ""
+            if message.photo:
+                media_type = MessageTypes.PHOTO.value
+                media_file_id = message.photo[-1].file_id
+            elif message.video:
+                media_type = MessageTypes.VIDEO.value
+                media_file_id = message.video.file_id
+            media_group = MediaGroupCreate(media_type=media_type,
+                                           media_group_id=int(message.media_group_id),
+                                           media_file_id=media_file_id)
+            await crud_media_group.create(db, obj_in=media_group)
+        await message.delete()
+    elif message.video:
+        media_dict['media_type'] = MessageTypes.VIDEO.value
+        media_dict['media_file_id'] = message.video.file_id
     elif message.photo:
-        media_dict['media_type'] = "photo"
-        media_dict['free_content_file_id'] = message.photo[-1].file_id
-    await update_media(media_dict, message, state)
+        media_dict['media_type'] = MessageTypes.PHOTO.value
+        media_dict['media_file_id'] = message.photo[-1].file_id
+    else:
+        media_dict['media_type'] = MessageTypes.TEXT_MESSAGE.value
+        media_dict['text'] = message.text
+    if message.media_group_id:
+        text_decorator.italic(await log_message.add_message(await message.answer(
+            text=f"Файл был добавлен в группу."
+        )))
+    else:
+        await update_media(media_dict, message, state)
 
 
 async def update_media(media_dict: dict, message: Message, state: FSMContext):

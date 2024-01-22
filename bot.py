@@ -1,12 +1,10 @@
 import asyncio
 
 import aiojobs
-import asyncpg as asyncpg
 import orjson
 import redis
 import structlog
 import tenacity
-from _testcapi import DBL_MIN
 from aiogram import Bot, Dispatcher
 from aiogram.client.session.aiohttp import AiohttpSession
 from aiogram.client.telegram import TelegramAPIServer
@@ -101,12 +99,12 @@ def setup_handlers(dp: Dispatcher) -> None:
 def setup_middlewares(dp: Dispatcher) -> None:
     dp.update.outer_middleware(StructLoggingMiddleware(logger=dp["aiogram_logger"]))
     dp.update.middleware(UserMiddleware())
-    dp.message.outer_middleware(ThrottlingMiddleware(redis=Redis(
-        host=config.FSM_HOST,
-        password=config.FSM_PASSWORD,
-        port=config.FSM_PORT,
-        db=0,
-    )))
+    # dp.message.outer_middleware(ThrottlingMiddleware(redis=Redis(
+    #     host=config.FSM_HOST,
+    #     password=config.FSM_PASSWORD,
+    #     port=config.FSM_PORT,
+    #     db=0,
+    # )))
     dp.update.middleware(MessageLoggerMiddleware())
 
 

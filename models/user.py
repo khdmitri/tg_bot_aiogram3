@@ -50,6 +50,7 @@ class Invoice(Base):
     amount = Column(BigInteger)
     status = Column(String(32), default="CREATED") # CREATED|PAID
     user_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
+    valid_to = Column(DateTime)
 
     payment = relationship("UserPayment", back_populates="invoice", lazy="selectin", cascade="all, delete-orphan")
     user = relationship("User", lazy="selectin")
@@ -65,6 +66,7 @@ class Invoice(Base):
             "amount": self.amount,
             "status": self.status,
             "user_id": self.user_id,
+            "valid_to": self.valid_to
         }
 
 

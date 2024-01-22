@@ -11,15 +11,18 @@ BOT_TOKEN: str = env.str("BOT_TOKEN")
 
 LOGGING_LEVEL: int = env.int("LOGGING_LEVEL", 10)
 
-PG_HOST: str = env.str("PG_HOST")
-PG_PORT: int = env.int("PG_PORT")
-PG_USER: str = env.str("PG_USER")
-PG_PASSWORD: str = env.str("PG_PASSWORD")
-PG_DATABASE: str = env.str("PG_DATABASE")
+POSTGRES_HOST: str = env.str("POSTGRES_HOST")
+POSTGRES_PORT: int = env.int("POSTGRES_PORT")
+POSTGRES_USER: str = env.str("POSTGRES_USER")
+POSTGRES_PASSWORD: str = env.str("POSTGRES_PASSWORD")
+POSTGRES_DATABASE: str = env.str("POSTGRES_DATABASE")
 
 FSM_HOST: str = env.str("FSM_HOST")
 FSM_PORT: int = env.int("FSM_PORT")
 FSM_PASSWORD: str = env.str("FSM_PASSWORD")
+
+UKASSA_PROVIDER_TOKEN_LIVE: str = env.str("UKASSA_PROVIDER_TOKEN_LIVE")
+UKASSA_PROVIDER_TOKEN_TEST: str = env.str("UKASSA_PROVIDER_TOKEN_TEST")
 
 USE_CACHE: bool = env.bool("USE_CACHE", False)
 

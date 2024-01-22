@@ -4,14 +4,52 @@ from aiogram.filters import StateFilter, or_f
 from filters import ChatTypeFilter
 from filters.admin import IsAdminFilter
 from lexicon.lexicon_ru import LEXICON_BTN_LABELS_RU
-from states.admin import PractiseMenu, MediaMenu
-from . import practise as practise, media
+from states.admin import PractiseMenu, MediaMenu, Page
+from . import practise as practise, media, post
 
 
 def prepare_router() -> Router:
     admin_router = Router()
     admin_router.message.filter(ChatTypeFilter("private"))
     admin_router.callback_query.filter(IsAdminFilter())
+
+    # ============= POST handlers ============
+
+    admin_router.callback_query.register(post.manage_page, F.data.startswith('manage_page:'))
+    admin_router.callback_query.register(post.add_post,
+                                         F.data.in_({'add_post'}),
+                                         StateFilter(Page.manage))
+    admin_router.callback_query.register(post.edit_post,
+                                         F.data.startswith('post:'),
+                                         StateFilter(Page.manage))
+    admin_router.callback_query.register(post.post_change_name_prompt,
+                                         F.data.in_({'post_change_name'}),
+                                         StateFilter(Page.edit))
+    admin_router.callback_query.register(post.post_change_order_prompt,
+                                         F.data.in_({'post_change_order'}),
+                                         StateFilter(Page.edit))
+    admin_router.callback_query.register(post.post_change_post_prompt,
+                                         F.data.in_({'post_change_post'}),
+                                         StateFilter(Page.edit))
+    admin_router.message.register(post.post_change_name_save,
+                                  StateFilter(Page.change_name),
+                                  ~F.text.in_({LEXICON_BTN_LABELS_RU['cancel_edit']}))
+    admin_router.message.register(post.post_change_order_save,
+                                  StateFilter(Page.change_order),
+                                  ~F.text.in_({LEXICON_BTN_LABELS_RU['cancel_edit']}))
+    admin_router.message.register(post.post_change_post_save,
+                                  StateFilter(Page.change_post),
+                                  ~F.text.in_({LEXICON_BTN_LABELS_RU['cancel_edit']}))
+    admin_router.message.register(post.cancel_change, F.text == LEXICON_BTN_LABELS_RU['cancel_edit'],
+                                  or_f(StateFilter(Page.change_name),
+                                       StateFilter(Page.change_order),
+                                       StateFilter(Page.change_post))
+                                  )
+    admin_router.callback_query.register(post.delete_post,
+                                         F.data.in_({'delete_post'}),
+                                         StateFilter(Page.edit))
+
+    # ============= END of post handlers =====
 
     admin_router.callback_query.register(practise.manage_practises, F.data.in_({'manage_practises'}))
     admin_router.callback_query.register(practise.add_practise,
@@ -21,8 +59,7 @@ def prepare_router() -> Router:
                                          F.data.in_({'add_media'}),
                                          StateFilter(PractiseMenu.edit))
     admin_router.callback_query.register(practise.edit_practise,
-                                         F.data.startswith('practise:'),
-                                         or_f(StateFilter(PractiseMenu.home), StateFilter(MediaMenu.edit)))
+                                         F.data.startswith('practise:'))
     admin_router.callback_query.register(media.edit_media,
                                          F.data.startswith('lesson:'),
                                          or_f(StateFilter(PractiseMenu.edit), StateFilter(MediaMenu.edit)))

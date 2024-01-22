@@ -25,8 +25,12 @@ class LogMessage:
 
         await self.redis.set(key_name, message_ids)
 
-    async def add_message(self, message: Message):
-        await self.add_message_id(chat_id=message.chat.id, message_id=message.message_id)
+    async def add_message(self, message: Message | list):
+        if isinstance(message, Message):
+            await self.add_message_id(chat_id=message.chat.id, message_id=message.message_id)
+        elif isinstance(message, list):
+            for msg in message:
+                await self.add_message_id(chat_id=msg.chat.id, message_id=msg.message_id)
 
     async def clean_content(self, chat_id: int, context: Message):
         key_name = f'ml_{chat_id}'

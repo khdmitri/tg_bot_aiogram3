@@ -28,6 +28,8 @@ class ThrottlingMiddleware(BaseMiddleware):
     ) -> Any:
 
         try:
+            if event.media_group_id:
+                await handler(event, data)
             await self.on_process_event(event)
         except CancelHandler:
             # Cancel current handler

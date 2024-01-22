@@ -18,11 +18,10 @@ class Media(BaseModel):
     free_content_file_id: Optional[str]
     comm_content_file_id: Optional[str]
     order: int
-    media_type: str
+    media_type: int
     title: Optional[str]
     category: Optional[str]
     description: Optional[str]
-    thumbs: Optional[str]
     cost: Optional[int]
 
     class Config:
@@ -34,8 +33,7 @@ class PractiseBase(BaseModel):
     title: Optional[str]
     description: Optional[str]
     media_file_id: Optional[str]
-    media_type: Optional[str]
-    thumbs: Optional[str]
+    media_type: Optional[int]
     is_published: bool = False
 
 

@@ -4,17 +4,19 @@ from typing import Optional, List
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
 
-from crud import crud_practise, crud_media
+from crud import crud_practise, crud_media, crud_media_group
 from db.session import SessionLocalAsync
 from keyboards.inline import practise_menu_keyboard
 from keyboards.inline.practise_menu import PractiseStartMenuKeyboard, PractiseLessonMenuKeyboard
 from lexicon.lexicon_ru import LEXICON_BTN_GROUP_LABELS_RU, LEXICON_CHAPTER_LABELS_RU, LEXICON_DEFAULT_NAMES_RU
 from models.practise import Practise
+from schemas import MediaGroupCreate
 from schemas.practise import PractiseCreate, PractiseUpdate
 from states.admin import PractiseMenu
 from utils import message_logger, log_message, text_decorator
+from utils.constants import MessageTypes
 from utils.db_utils import swap_orders
-from utils.handler import prepare_context
+from utils.handler import prepare_context, prepare_media_group
 
 
 async def manage_practises(callback: CallbackQuery, state: FSMContext) -> None:
@@ -57,8 +59,7 @@ async def add_practise(callback: CallbackQuery, state: FSMContext) -> None:
             "title": LEXICON_DEFAULT_NAMES_RU['practise_title'],
             "description": LEXICON_DEFAULT_NAMES_RU['practise_description'],
             "media_file_id": None,
-            "media_type": None,
-            "thumbs": None,
+            "media_type": MessageTypes.NOT_DEFINED.value,
         }
         new_practise = PractiseCreate(**new_practise)
         await crud_practise.create(db, obj_in=new_practise)
@@ -112,16 +113,21 @@ async def show_practise(message: Message, practise: dict):
     ))
 
     await log_message.add_message(await message.answer(text=text_decorator.italic(LEXICON_DEFAULT_NAMES_RU['media_content'])))
-    match practise.get("media_type", ""):
-        case "photo":
+    match practise.get("media_type", MessageTypes.NOT_DEFINED.value):
+        case MessageTypes.PHOTO.value:
             await log_message.add_message(await message.answer_photo(
                 practise["media_file_id"],
                 reply_markup=practise_menu_keyboard.get_change_media_keyboard()))
-        case "video":
+        case MessageTypes.VIDEO.value:
             await log_message.add_message(await message.answer_video(
                 practise["media_file_id"],
                 reply_markup=practise_menu_keyboard.get_change_media_keyboard()))
-        case _:
+        case MessageTypes.MEDIA_GROUP.value:
+            await log_message.add_message(await message.answer_media_group(
+                media=await prepare_media_group(practise["media_group_id"]),
+                reply_markup=practise_menu_keyboard.get_change_media_keyboard())
+            )
+        case MessageTypes.NOT_DEFINED.value:
             await log_message.add_message(await message.answer(
                 text=LEXICON_DEFAULT_NAMES_RU['media_content_empty'],
                 reply_markup=practise_menu_keyboard.get_change_media_keyboard()
@@ -206,14 +212,40 @@ async def practise_change_media_prompt(callback: CallbackQuery, state: FSMContex
 async def practise_change_media_save(message: Message, state: FSMContext) -> None:
     data = await state.get_data()
     practise_dict = data.get("edit_practise", None)
-    if message.video:
-        practise_dict['media_type'] = "video"
+    if message.media_group_id:
+        async with SessionLocalAsync() as db:
+            practise = await crud_practise.update_media_group_id(db, practise_dict["id"], int(message.media_group_id))
+            practise_dict = practise.as_dict()
+            await state.update_data(edit_post=practise_dict)
+            media_type = MessageTypes.NOT_DEFINED.value
+            media_file_id = ""
+            if message.photo:
+                media_type = MessageTypes.PHOTO.value
+                media_file_id = message.photo[-1].file_id
+            elif message.video:
+                media_type = MessageTypes.VIDEO.value
+                media_file_id = message.video.file_id
+            media_group = MediaGroupCreate(media_type=media_type,
+                                           media_group_id=int(message.media_group_id),
+                                           media_file_id=media_file_id)
+            await crud_media_group.create(db, obj_in=media_group)
+        await message.delete()
+    elif message.video:
+        practise_dict['media_type'] = MessageTypes.VIDEO.value
         practise_dict['media_file_id'] = message.video.file_id
     elif message.photo:
-        practise_dict['media_type'] = "photo"
+        practise_dict['media_type'] = MessageTypes.PHOTO.value
         practise_dict['media_file_id'] = message.photo[-1].file_id
-        practise_dict['thumbs'] = message.photo[-1].file_id
-    await update_practise(practise_dict, message, state)
+    else:
+        practise_dict['media_type'] = MessageTypes.TEXT_MESSAGE.value
+        practise_dict['text'] = message.text
+
+    if message.media_group_id:
+        text_decorator.italic(await log_message.add_message(await message.answer(
+            text=f"Файл был добавлен в группу."
+        )))
+    else:
+        await update_practise(practise_dict, message, state)
 
 
 async def update_practise(practise_dict: dict, message: Message, state: FSMContext):

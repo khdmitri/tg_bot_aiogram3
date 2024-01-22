@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING
 
-from sqlalchemy import Column, String, DateTime, Boolean, func, SmallInteger, ForeignKey, BigInteger
+from sqlalchemy import Column, String, DateTime, Boolean, func, SmallInteger, ForeignKey, BigInteger, Integer
 from sqlalchemy.orm import relationship, Mapped, mapped_column
 
 from db.base_class import Base
@@ -15,7 +15,7 @@ class Media(Base):
     free_content_file_id = Column(String, index=True, unique=True)
     comm_content_file_id = Column(String, index=True, unique=True)
     order = Column(SmallInteger)
-    media_type = Column(String(64))
+    media_type: Mapped[int] = mapped_column(Integer, default=0)
     title = Column(String)
     category = Column(String(32))
     description = Column(String)
@@ -25,6 +25,7 @@ class Media(Base):
     update_date = Column(DateTime, onupdate=func.now())
     practise_id: Mapped[int] = mapped_column(ForeignKey("practise.id"))
     practise = relationship("Practise", back_populates="medias", lazy="selectin")
+    media_group_id: Mapped[int] = mapped_column(BigInteger, nullable=True)
 
     def as_dict(self):
         return {
@@ -38,5 +39,6 @@ class Media(Base):
             "comm_content_file_id": self.comm_content_file_id,
             "category": self.category,
             "cost": self.cost,
-            "practise": self.practise.title
+            "practise": self.practise.title,
+            "media_group_id": self.media_group_id,
         }

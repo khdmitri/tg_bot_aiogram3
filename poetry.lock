@@ -992,6 +992,18 @@ pydantic = ">=2.3.0"
 python-dotenv = ">=0.21.0"
 
 [[package]]
+name = "pyqiwi"
+version = "0.2.0"
+description = "Client for QIWI payment system"
+category = "main"
+optional = false
+python-versions = "*"
+files = [
+    {file = "pyqiwi-0.2.0-py3-none-any.whl", hash = "sha256:3227caf7d709e3a05a3437b5f446e3bcb30bbf1ba03edd533dda2199f28dcbeb"},
+    {file = "pyqiwi-0.2.0.tar.gz", hash = "sha256:f72267da318b241e904ad0aae33e14c5376bb0c7c4b0e39ce4702e6475b1a435"},
+]
+
+[[package]]
 name = "python-dotenv"
 version = "1.0.0"
 description = "Read key-value pairs from a .env file and set them as environment variables"
@@ -1265,4 +1277,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "9b3cd96ae0d88903157b88826922bf8f5f3e5063dc0ef7a3022fdc11d31666a7"
+content-hash = "a4243c513ffba3f31f973229f8863a7f812b95dc8452c110e5f076dc6bb6a545"

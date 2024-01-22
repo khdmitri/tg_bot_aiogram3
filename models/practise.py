@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING
 
-from sqlalchemy import Column, String, SmallInteger, BigInteger, Boolean
-from sqlalchemy.orm import relationship
+from sqlalchemy import Column, String, SmallInteger, BigInteger, Boolean, Integer
+from sqlalchemy.orm import relationship, Mapped, mapped_column
 
 from db.base_class import Base
 
@@ -15,10 +15,10 @@ class Practise(Base):
     title = Column(String(128))
     description = Column(String)
     media_file_id = Column(String)
-    media_type = Column(String(32))
+    media_type: Mapped[int] = mapped_column(Integer, default=0)
     medias = relationship("Media", back_populates="practise", lazy="selectin", cascade="all, delete-orphan")
-    thumbs = Column(String, unique=True)
     is_published = Column(Boolean, default=False)
+    media_group_id: Mapped[int] = mapped_column(BigInteger, nullable=True)
 
     def as_dict(self):
         return {
@@ -28,6 +28,6 @@ class Practise(Base):
             "description": self.description,
             "media_type": self.media_type,
             "media_file_id": self.media_file_id,
-            "thumbs": self.thumbs,
             "is_published": self.is_published,
+            "media_group_id": self.media_group_id,
         }

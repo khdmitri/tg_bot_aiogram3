@@ -1,12 +1,15 @@
 from aiogram import html, types
 from aiogram.fsm.context import FSMContext
-from aiogram.types import InputFile, FSInputFile
+from aiogram.types import InputFile, FSInputFile, CallbackQuery
 
 import states
 from keyboards import get_start_menu_keyboard
-from lexicon.lexicon_ru import LEXICON_BTN_GROUP_LABELS_RU, LEXICON_CHAPTER_LABELS_RU
+from keyboards.inline.start_menu import get_nav_keyboard
+from lexicon.lexicon_ru import LEXICON_BTN_GROUP_LABELS_RU, LEXICON_CHAPTER_LABELS_RU, LEXICON_DEFAULT_NAMES_RU
 from middlewares import message_logger
+from states.user import UserMainMenu
 from utils import text_decorator
+from utils.handler import show_page, prepare_context
 from utils.message_logger import log_message
 
 
@@ -19,14 +22,27 @@ async def start(msg: types.Message, state: FSMContext, user: dict) -> None:
 
     await log_message.add_message(await msg.answer("\n".join(m)))
     # intro_file: InputFile = FSInputFile('media/intro/intro_cyrcle.mp4', filename='intro.mp4')
-    await log_message.add_message(await msg.answer_video('BAACAgIAAxkDAAMeZaDLZPP06ASnd8ulGRwm_AtepF0AAgtDAAJOEQlJXEw7Z2s-lho0BA',
-                           protect_content=True))
+    # await log_message.add_message(await msg.answer_video('BAACAgIAAxkDAAMeZaDLZPP06ASnd8ulGRwm_AtepF0AAgtDAAJOEQlJXEw7Z2s-lho0BA',
+    #                        protect_content=True))
+
+    await show_page(message=msg, page='start')
+
     await log_message.add_message(await msg.answer(
         text=LEXICON_BTN_GROUP_LABELS_RU['start_menu'],
         reply_markup=get_start_menu_keyboard(is_admin=user["is_admin"]))
     )
     # print(answer)
     await state.set_state(states.user.UserMainMenu.menu)
+
+
+async def about(callback: CallbackQuery, state: FSMContext):
+    await prepare_context(state, UserMainMenu.about, callback.message)
+    await show_page(message=callback.message, page='about')
+
+    await log_message.add_message(await callback.message.answer(
+        text=LEXICON_DEFAULT_NAMES_RU['practise_navigation_menu'],
+        reply_markup=get_nav_keyboard(is_admin=False))
+                                  )
 
 
 async def home(event: types.CallbackQuery | types.Message, state: FSMContext, user: dict) -> None:

@@ -20,3 +20,13 @@ class MediaMenu(StatesGroup):
     change_cost = State()
     change_category = State()
     view = State()
+
+
+class Page(StatesGroup):
+    manage = State()
+    new = State()
+    edit = State()
+    change_name = State()
+    change_order = State()
+    change_post = State()
+    save = State()

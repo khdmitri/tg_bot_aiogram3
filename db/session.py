@@ -8,11 +8,11 @@ from db.base_class import Base
 
 SQLALCHEMY_DATABASE_URI_ASYNC = PostgresDsn.build(
     scheme="postgresql+asyncpg",
-    username=config.PG_USER,
-    password=config.PG_PASSWORD,
-    host=config.PG_HOST,
-    port=int(config.PG_PORT),
-    path=f"{config.PG_DATABASE or ''}",
+    username=config.POSTGRES_USER,
+    password=config.POSTGRES_PASSWORD,
+    host=config.POSTGRES_HOST,
+    port=int(config.POSTGRES_PORT),
+    path=f"{config.POSTGRES_DATABASE or ''}",
 )
 
 engine = create_async_engine(str(SQLALCHEMY_DATABASE_URI_ASYNC),

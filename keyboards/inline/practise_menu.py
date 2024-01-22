@@ -54,6 +54,8 @@ class PractiseStartMenuKeyboard:
     def _append_order_buttons(self, practises: List[Practise]):
         res_list = []
         btn_length = len(self.buttons)
+        if not practises:
+            return res_list
         for i, practise in enumerate(practises):
             res_list.append(self.buttons[i])
             res_list.append(InlineKeyboardButton(

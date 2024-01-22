@@ -18,6 +18,8 @@ class Settings(BaseSettings):
     USE_REDIS: bool
     REDIS_HOST: str
     REDIS_PORT: int
+    UKASSA_PROVIDER_TOKEN_LIVE: str
+    UKASSA_PROVIDER_TOKEN_TEST: str
 
 
 settings = Settings()

@@ -26,7 +26,7 @@ class Practise(BaseModel):
     title: Optional[str]
     description: Optional[str]
     media_file_id: Optional[str]
-    media_type: Optional[str]
+    media_type: Optional[int]
     thumbs: Optional[str]
 
     class Config:
@@ -38,19 +38,22 @@ class MediaBase(BaseModel):
     free_content_file_id: Optional[str]
     comm_content_file_id: Optional[str]
     order: int
-    media_type: Optional[str]
+    media_type: Optional[int]
     title: Optional[str]
     category: Optional[str]
     description: Optional[str]
     cost: Optional[int]
+    media_group_id: Optional[int]
 
 
 class MediaCreate(MediaBase):
     practise_id: int
+    media_group_id: Optional[int] = None
 
 
 class MediaUpdate(MediaBase):
     id: int
+    media_group_id: Optional[int] = None
 
 
 class MediaInDBBase(MediaUpdate):

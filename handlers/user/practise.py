@@ -7,7 +7,8 @@ from keyboards.inline.view_practise_menu import PractiseLessonMenuKeyboard
 from lexicon.lexicon_ru import LEXICON_CHAPTER_LABELS_RU, LEXICON_DEFAULT_NAMES_RU
 from states.admin import PractiseMenu
 from utils import log_message, text_decorator
-from utils.handler import prepare_context
+from utils.constants import MessageTypes
+from utils.handler import prepare_context, prepare_media_group
 
 
 async def view_practise(callback: CallbackQuery | Message, state: FSMContext) -> None:
@@ -40,11 +41,15 @@ async def show_practise(message: Message, practise: dict):
         await message.answer(text=text_decorator.not_empty(practise["description"]))
     )
 
-    match practise.get("media_type", ""):
-        case "photo":
+    match practise.get("media_type", MessageTypes.NOT_DEFINED.value):
+        case MessageTypes.PHOTO.value:
             await log_message.add_message(await message.answer_photo(practise["media_file_id"]))
-        case "video":
+        case MessageTypes.VIDEO.value:
             await log_message.add_message(await message.answer_video(practise["media_file_id"]))
+        case MessageTypes.MEDIA_GROUP.value:
+            await log_message.add_message(await message.answer_media_group(
+                media=await prepare_media_group(practise["media_group_id"])
+            ))
 
     async with SessionLocalAsync() as db:
         lessons = await crud_media.get_multi_by_practise_id(db, practise_id=practise['id'])
