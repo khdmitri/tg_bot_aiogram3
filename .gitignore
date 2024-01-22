@@ -5,7 +5,7 @@ client64/
 client64_19.17/
 .env
 .idea/*
-alembic/*
+alembic/versions/*
 media/*
 venv/
 __pycache__/
