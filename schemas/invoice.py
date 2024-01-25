@@ -30,7 +30,7 @@ class InvoiceBase(BaseModel):
 
 
 class InvoiceCreate(InvoiceBase):
-    pass
+    valid_to: datetime
 
 
 class InvoiceUpdate(InvoiceBase):

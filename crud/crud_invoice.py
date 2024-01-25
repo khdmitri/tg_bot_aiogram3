@@ -18,7 +18,11 @@ class CRUDInvoice(CRUDBase[Invoice, InvoiceCreate, InvoiceUpdate]):
             Invoice.status == 'PAID',
             Invoice.valid_to >= datetime.now()
         ))
-        return result.scalars().all()
+        return result.scalars().first()
+
+    async def get_invoice_by_uuid(self, db: AsyncSession, uuid: str) -> Invoice:
+        result = await db.execute(select(Invoice).filter(Invoice.uuid == uuid))
+        return result.scalars().first()
 
 
 crud_invoice = CRUDInvoice(Invoice)

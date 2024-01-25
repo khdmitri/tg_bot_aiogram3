@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import TYPE_CHECKING
 
 from sqlalchemy import Column, BigInteger, String, DateTime, func, Boolean, ForeignKey
@@ -24,6 +25,7 @@ class User(Base):
     is_active = Column(Boolean, default=True)
     is_admin = Column(Boolean, default=False)
     payments = relationship("UserPayment", back_populates="user", cascade="all, delete-orphan")
+    full_access_granted: Mapped[datetime] = mapped_column(DateTime, nullable=True)
 
     def as_dict(self):
         return {
@@ -36,7 +38,8 @@ class User(Base):
             "last_visit": self.last_visit,
             "internal_amount": self.internal_amount,
             "is_active": self.is_active,
-            "is_admin": self.is_admin
+            "is_admin": self.is_admin,
+            "full_access_granted": self.full_access_granted,
         }
 
 
@@ -66,7 +69,7 @@ class Invoice(Base):
             "amount": self.amount,
             "status": self.status,
             "user_id": self.user_id,
-            "valid_to": self.valid_to
+            "valid_to": self.valid_to,
         }
 
 

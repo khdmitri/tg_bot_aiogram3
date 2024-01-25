@@ -5,10 +5,12 @@ import orjson
 import redis
 import structlog
 import tenacity
-from aiogram import Bot, Dispatcher
+from aiogram import Bot, Dispatcher, F
 from aiogram.client.session.aiohttp import AiohttpSession
 from aiogram.client.telegram import TelegramAPIServer
+from aiogram.enums import ContentType
 from aiogram.fsm.storage.redis import DefaultKeyBuilder, RedisStorage
+from aiogram.types import PreCheckoutQuery, Message
 from aiohttp import web
 from redis.asyncio import Redis
 
@@ -20,7 +22,6 @@ from keyboards.set_menu import set_main_menu
 from middlewares import StructLoggingMiddleware
 from middlewares.db import UserMiddleware
 from middlewares.message_logger import MessageLoggerMiddleware
-from middlewares.throttling import ThrottlingMiddleware
 
 
 async def create_db_connections(dp: Dispatcher) -> None:
@@ -92,6 +93,15 @@ async def close_db_connections(dp: Dispatcher) -> None:
 
 
 def setup_handlers(dp: Dispatcher) -> None:
+    # @dp.pre_checkout_query(lambda query: True)
+    # async def pre_checkout_query(pre_checkout_q: PreCheckoutQuery):
+    #     await pre_checkout_q.answer(ok=True)
+
+    # @dp.message(F.content_type == ContentType.SUCCESSFUL_PAYMENT)
+    # async def successful_payment(message: Message):
+    #     await message.answer(text="Платеж успешен!")
+
+    dp.include_router(handlers.payment.prepare_router())
     dp.include_router(handlers.user.prepare_router())
     dp.include_router(handlers.admin.prepare_router())
 

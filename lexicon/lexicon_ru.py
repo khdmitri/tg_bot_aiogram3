@@ -74,6 +74,8 @@ LEXICON_CHAPTER_EXIT_RU: dict[str, str] = {
 }
 
 LEXICON_DEFAULT_NAMES_RU: dict[str, str] = {
+    'payment_success': 'Платеж успешно завершен!',
+    'payment_error': 'Что-то пошло с оплатой не так, попробуйте позже...',
     'practise_title': 'Новая практика...',
     'media_title': 'Новый урок...',
     'post_name': 'Новый пост...',

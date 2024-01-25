@@ -25,7 +25,7 @@ async def view_lesson(callback: CallbackQuery | Message, state: FSMContext) -> N
     else:
         msg = callback
         data = await state.get_data()
-        lesson_dict = data.get("view_practise", None)
+        lesson_dict = data.get("view_lesson", None)
         lesson_id = lesson_dict["id"]
 
     menu = MediaMenuKeyboard(practise_id=data['view_practise']['id'])

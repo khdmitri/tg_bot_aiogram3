@@ -40,5 +40,6 @@ class Media(Base):
             "category": self.category,
             "cost": self.cost,
             "practise": self.practise.title,
+            "practise_id": self.practise_id,
             "media_group_id": self.media_group_id,
         }

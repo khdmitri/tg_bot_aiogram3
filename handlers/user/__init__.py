@@ -1,12 +1,12 @@
 from aiogram import Router, F
 from aiogram.filters import CommandStart, StateFilter, Command
 
-import states
-from filters import ChatTypeFilter, TextFilter
+from filters import ChatTypeFilter
 from lexicon.lexicon_ru import LEXICON_BASIC_BTNS_RU
 from states.user import UserMainMenu
 
 from . import start, core, practise, lesson
+from ..payment import payment
 
 
 def prepare_router() -> Router:
