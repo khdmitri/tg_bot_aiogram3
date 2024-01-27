@@ -49,11 +49,14 @@ class MediaBase(BaseModel):
 class MediaCreate(MediaBase):
     practise_id: int
     media_group_id: Optional[int] = None
+    action_date: Optional[datetime] = None
 
 
 class MediaUpdate(MediaBase):
     id: int
     media_group_id: Optional[int] = None
+    stream_link: Optional[str] = None
+    action_date: Optional[datetime] = None
 
 
 class MediaInDBBase(MediaUpdate):

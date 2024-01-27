@@ -19,6 +19,7 @@ class Practise(Base):
     medias = relationship("Media", back_populates="practise", lazy="selectin", cascade="all, delete-orphan")
     is_published = Column(Boolean, default=False)
     media_group_id: Mapped[int] = mapped_column(BigInteger, nullable=True)
+    category: Mapped[int] = mapped_column(Integer, nullable=True)
 
     def as_dict(self):
         return {
@@ -30,4 +31,5 @@ class Practise(Base):
             "media_file_id": self.media_file_id,
             "is_published": self.is_published,
             "media_group_id": self.media_group_id,
+            "category": self.category,
         }

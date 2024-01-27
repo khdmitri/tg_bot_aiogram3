@@ -1,13 +1,22 @@
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State
 from aiogram.types import Message, InputMediaPhoto, InputMediaVideo
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from crud import crud_media_group, crud_post
+from crud import crud_media_group, crud_post, crud_group
 from db.session import SessionLocalAsync
 from middlewares import message_logger
 from models.post import Post
 from utils import log_message, text_decorator
 from utils.constants import MessageTypes
+
+
+async def if_user_is_group_member(db: AsyncSession, *, user_id, media_id):
+    member = await crud_group.is_member(db, user_id=user_id, media_id=media_id)
+    if member:
+        return True
+    else:
+        return False
 
 
 async def prepare_context(state: FSMContext, new_state: State, message: Message):

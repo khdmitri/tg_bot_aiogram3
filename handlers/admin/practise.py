@@ -8,13 +8,14 @@ from crud import crud_practise, crud_media, crud_media_group
 from db.session import SessionLocalAsync
 from keyboards.inline import practise_menu_keyboard
 from keyboards.inline.practise_menu import PractiseStartMenuKeyboard, PractiseLessonMenuKeyboard
-from lexicon.lexicon_ru import LEXICON_BTN_GROUP_LABELS_RU, LEXICON_CHAPTER_LABELS_RU, LEXICON_DEFAULT_NAMES_RU
+from lexicon.lexicon_ru import LEXICON_BTN_GROUP_LABELS_RU, LEXICON_CHAPTER_LABELS_RU, LEXICON_DEFAULT_NAMES_RU, \
+    LEXICON_PRACTISE_CATEGORY
 from models.practise import Practise
 from schemas import MediaGroupCreate
 from schemas.practise import PractiseCreate, PractiseUpdate
 from states.admin import PractiseMenu
 from utils import message_logger, log_message, text_decorator
-from utils.constants import MessageTypes
+from utils.constants import MessageTypes, PractiseCategories
 from utils.db_utils import swap_orders
 from utils.handler import prepare_context, prepare_media_group
 
@@ -52,6 +53,7 @@ async def manage_practises(callback: CallbackQuery, state: FSMContext) -> None:
 async def add_practise(callback: CallbackQuery, state: FSMContext) -> None:
     # Меняем состояние на новая практика
     await state.set_state(PractiseMenu.new_practise)
+
     # Создаем новую практику
     async with SessionLocalAsync() as db:
         new_practise = {
@@ -60,6 +62,7 @@ async def add_practise(callback: CallbackQuery, state: FSMContext) -> None:
             "description": LEXICON_DEFAULT_NAMES_RU['practise_description'],
             "media_file_id": None,
             "media_type": MessageTypes.NOT_DEFINED.value,
+            "category": PractiseCategories.LESSON,
         }
         new_practise = PractiseCreate(**new_practise)
         await crud_practise.create(db, obj_in=new_practise)
@@ -100,6 +103,13 @@ async def practise_lessons_swap(callback: CallbackQuery, state: FSMContext) -> N
 
 
 async def show_practise(message: Message, practise: dict):
+    await log_message.add_message(await message.answer(
+        text=text_decorator.italic(LEXICON_DEFAULT_NAMES_RU['practise_category'])))
+    await log_message.add_message(await message.answer(
+        text=text_decorator.strong(LEXICON_PRACTISE_CATEGORY[practise.get("category", 1)]),
+        reply_markup=practise_menu_keyboard.get_change_category_keyboard()
+    ))
+
     await log_message.add_message(await message.answer(text=text_decorator.italic(LEXICON_DEFAULT_NAMES_RU['title'])))
     await log_message.add_message(await message.answer(
         text=text_decorator.strong(text_decorator.not_empty(practise.get("title", "-"))),
@@ -134,11 +144,20 @@ async def show_practise(message: Message, practise: dict):
             ))
 
     async with SessionLocalAsync() as db:
-        lessons = await crud_media.get_multi_by_practise_id(db, practise_id=practise['id'])
-        await log_message.add_message(await message.answer(
-            text=text_decorator.strong(LEXICON_DEFAULT_NAMES_RU['lessons']),
-            reply_markup=PractiseLessonMenuKeyboard(lessons).get_keyboard()
-        ))
+        category = practise.get("category", PractiseCategories.LESSON.value)
+        match category:
+            case PractiseCategories.LESSON.value:
+                lessons = await crud_media.get_multi_by_practise_id(db, practise_id=practise['id'])
+                await log_message.add_message(await message.answer(
+                    text=text_decorator.strong(LEXICON_DEFAULT_NAMES_RU['lessons']),
+                    reply_markup=PractiseLessonMenuKeyboard(lessons).get_keyboard()
+                ))
+            case PractiseCategories.ONLINE.value:
+                lessons = await crud_media.get_online_by_practise_id(db, practise_id=practise['id'])
+                await log_message.add_message(await message.answer(
+                    text=text_decorator.strong(LEXICON_DEFAULT_NAMES_RU['lessons']),
+                    reply_markup=PractiseLessonMenuKeyboard(lessons).get_online_keyboard()
+                ))
 
     if practise["is_published"]:
         text = LEXICON_DEFAULT_NAMES_RU['practise_content_published']
@@ -154,6 +173,21 @@ async def show_practise(message: Message, practise: dict):
         text=LEXICON_DEFAULT_NAMES_RU['practise_navigation_menu'],
         reply_markup=practise_menu_keyboard.get_back_to_list_keyboard()
     ))
+
+
+async def practise_change_category_prompt(callback: CallbackQuery, state: FSMContext) -> None:
+    await state.set_state(PractiseMenu.change_category)
+    text_decorator.strong(text_decorator.italic(await log_message.add_message(await callback.message.answer(
+        text=LEXICON_DEFAULT_NAMES_RU['practise_change_category'],
+        reply_markup=practise_menu_keyboard.get_category_keyboard()
+    ))))
+
+
+async def practise_change_category_save(message: Message, state: FSMContext) -> None:
+    data = await state.get_data()
+    practise_dict = data.get("edit_practise", None)
+    practise_dict["category"] = PractiseCategories[message.text.upper()].value
+    await update_practise(practise_dict, message, state)
 
 
 async def practise_change_publish_prompt(callback: CallbackQuery, state: FSMContext) -> None:

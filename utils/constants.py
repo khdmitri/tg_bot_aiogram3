@@ -9,6 +9,10 @@ class MessageTypes(Enum):
     NOT_DEFINED = 0
 
 
+class PractiseCategories(Enum):
+    LESSON = 1
+    ONLINE = 2
+
 # if __name__ == '__main__':
 #     var = MessageTypes.PHOTO
 #     print(var)

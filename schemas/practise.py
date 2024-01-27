@@ -38,11 +38,12 @@ class PractiseBase(BaseModel):
 
 
 class PractiseCreate(PractiseBase):
-    pass
+    category: int
 
 
 class PractiseUpdate(PractiseBase):
     id: int
+    category: Optional[int] = None
 
 
 class PractiseInDBBase(PractiseUpdate):

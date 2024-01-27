@@ -1,5 +1,7 @@
+from datetime import datetime
 from typing import List
 
+import pytz
 from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -18,6 +20,17 @@ class CRUDMedia(CRUDBase[Media, MediaCreate, MediaUpdate]):
         result = await db.execute(select(self.model).filter(
             self.model.practise_id == practise_id).order_by(
             self.model.order)
+        )
+        return result.scalars().all()
+
+    async def get_online_by_practise_id(
+            self,
+            db: AsyncSession,
+            practise_id: int
+    ) -> List[ModelType]:
+        result = await db.execute(select(self.model).filter(
+            self.model.practise_id == practise_id, self.model.action_date > datetime.now()).order_by(
+            self.model.action_date)
         )
         return result.scalars().all()
 

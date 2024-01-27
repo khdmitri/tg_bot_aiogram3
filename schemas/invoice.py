@@ -30,7 +30,9 @@ class InvoiceBase(BaseModel):
 
 
 class InvoiceCreate(InvoiceBase):
-    valid_to: datetime
+    valid_to: Optional[datetime] = None
+    ticket_count: int = 1
+    category: int
 
 
 class InvoiceUpdate(InvoiceBase):

@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import TYPE_CHECKING
 
-from sqlalchemy import Column, BigInteger, String, DateTime, func, Boolean, ForeignKey
+from sqlalchemy import Column, BigInteger, String, DateTime, func, Boolean, ForeignKey, Integer
 from sqlalchemy.orm import relationship, mapped_column, Mapped
 
 from db.base_class import Base
@@ -35,7 +35,6 @@ class User(Base):
             "fullname": self.fullname,
             "email": self.email,
             "contact": self.contact,
-            "last_visit": self.last_visit,
             "internal_amount": self.internal_amount,
             "is_active": self.is_active,
             "is_admin": self.is_admin,
@@ -49,11 +48,13 @@ class Invoice(Base):
     create_date = Column(DateTime, server_default=func.now())
     update_date = Column(DateTime, onupdate=func.now())
     practise_id: Mapped[int] = mapped_column(ForeignKey("practise.id", ondelete='SET NULL'))
-    media_id: Mapped[int] = mapped_column(ForeignKey("media.id", ondelete='SET NULL'))
+    media_id: Mapped[int] = mapped_column(ForeignKey("media.id", ondelete='SET NULL'), nullable=True)
     amount = Column(BigInteger)
     status = Column(String(32), default="CREATED") # CREATED|PAID
     user_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
-    valid_to = Column(DateTime)
+    valid_to = Column(DateTime, nullable=True)
+    ticket_count: Mapped[int] = mapped_column(Integer, nullable=True)
+    category: Mapped[int] = mapped_column(Integer, default=1)
 
     payment = relationship("UserPayment", back_populates="invoice", lazy="selectin", cascade="all, delete-orphan")
     user = relationship("User", lazy="selectin")
@@ -70,6 +71,8 @@ class Invoice(Base):
             "status": self.status,
             "user_id": self.user_id,
             "valid_to": self.valid_to,
+            "ticket_count": self.ticket_count,
+            "category": self.category,
         }
 
 

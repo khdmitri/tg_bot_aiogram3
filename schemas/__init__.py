@@ -5,3 +5,4 @@ from .media_group import MediaGroup, MediaGroupCreate, MediaGroupUpdate
 from .practise import Practise, PractiseCreate, PractiseUpdate
 from .user import User, UserCreate, UserUpdate
 from .user_payment import UserPayment, UserPaymentCreate, UserPaymentUpdate
+from .group import Group, GroupCreate, GroupUpdate

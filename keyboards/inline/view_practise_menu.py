@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Optional, List
 
 from aiogram.types import InlineKeyboardButton
@@ -45,11 +46,12 @@ class ViewPractiseMenuKeyboard:
 
 class PractiseLessonMenuKeyboard:
 
-    def __init__(self, lessons: Optional[List[Media]] = None):
+    def __init__(self, lessons: Optional[List[Media]] = None, is_online=False):
         if isinstance(lessons, list):
             self.buttons = [
                 InlineKeyboardButton(
-                    text=lesson.title if lesson.is_free else '🔑' + lesson.title,
+                    text=lesson.action_date.strftime("%d.%m.%Y %H:%M")
+                    if isinstance(lesson.action_date, datetime) else "",
                     callback_data='view_lesson:' + str(lesson.id)
                 )
                 for lesson in lessons

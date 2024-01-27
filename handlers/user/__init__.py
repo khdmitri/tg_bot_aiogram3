@@ -3,6 +3,7 @@ from aiogram.filters import CommandStart, StateFilter, Command
 
 from filters import ChatTypeFilter
 from lexicon.lexicon_ru import LEXICON_BASIC_BTNS_RU
+from states.admin import MediaMenu
 from states.user import UserMainMenu
 
 from . import start, core, practise, lesson
@@ -23,6 +24,12 @@ def prepare_router() -> Router:
     user_router.callback_query.register(lesson.view_lesson, F.data.startswith('view_lesson:'))
     user_router.callback_query.register(lesson.lesson_pay_action, F.data.startswith('lesson_pay_action'))
     user_router.callback_query.register(start.about, F.data.in_({'about'}))
+    user_router.callback_query.register(lesson.join_online_lesson, F.data.in_({'media_join_online_lesson'}))
+    user_router.callback_query.register(lesson.online_pay_action, F.data.in_({'lesson_online_pay_action'}))
+    user_router.callback_query.register(lesson.lesson_checkout_action, F.data.in_({'lesson_checkout_action'}),
+                                        StateFilter(MediaMenu.join_online_lesson))
+    user_router.callback_query.register(lesson.online_abonement_pay_action,
+                                        F.data.in_({'lesson_online_abonement_pay_action'}))
     user_router.message.register(core.forward_message_handler, StateFilter(UserMainMenu.message))
     # user_router.message.register(
     #     start.start,

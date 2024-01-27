@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import TYPE_CHECKING
 
 from sqlalchemy import Column, String, DateTime, Boolean, func, SmallInteger, ForeignKey, BigInteger, Integer
@@ -26,6 +27,8 @@ class Media(Base):
     practise_id: Mapped[int] = mapped_column(ForeignKey("practise.id"))
     practise = relationship("Practise", back_populates="medias", lazy="selectin")
     media_group_id: Mapped[int] = mapped_column(BigInteger, nullable=True)
+    action_date: Mapped[datetime] = mapped_column(DateTime, nullable=True)
+    stream_link: Mapped[str] = mapped_column(String, nullable=True)
 
     def as_dict(self):
         return {
@@ -42,4 +45,6 @@ class Media(Base):
             "practise": self.practise.title,
             "practise_id": self.practise_id,
             "media_group_id": self.media_group_id,
+            "action_date": datetime.timestamp(self.action_date) if self.action_date else None,
+            "stream_link": self.stream_link,
         }

@@ -9,6 +9,7 @@ class PractiseMenu(StatesGroup):
     change_description = State()
     change_media = State()
     view = State()
+    change_category = State()
 
 
 class MediaMenu(StatesGroup):
@@ -20,6 +21,9 @@ class MediaMenu(StatesGroup):
     change_cost = State()
     change_category = State()
     view = State()
+    change_action_date = State()
+    change_stream_link = State()
+    join_online_lesson = State()
 
 
 class Page(StatesGroup):

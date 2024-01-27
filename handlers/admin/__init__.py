@@ -63,6 +63,9 @@ def prepare_router() -> Router:
     admin_router.callback_query.register(media.edit_media,
                                          F.data.startswith('lesson:'),
                                          or_f(StateFilter(PractiseMenu.edit), StateFilter(MediaMenu.edit)))
+    admin_router.callback_query.register(media.edit_online_media,
+                                         F.data.startswith('online_lesson:'),
+                                         or_f(StateFilter(PractiseMenu.edit), StateFilter(MediaMenu.edit)))
     admin_router.callback_query.register(practise.practise_change_title_prompt,
                                          F.data.in_({'practise_change_title'}),
                                          StateFilter(PractiseMenu.edit))
@@ -75,6 +78,9 @@ def prepare_router() -> Router:
     admin_router.callback_query.register(media.delete_media,
                                          F.data.in_({'delete_media'}),
                                          StateFilter(MediaMenu.edit))
+    admin_router.callback_query.register(practise.practise_change_category_prompt,
+                                         F.data.in_({'practise_change_category'}),
+                                         StateFilter(PractiseMenu.edit))
     admin_router.message.register(practise.practise_change_title_save,
                                   StateFilter(PractiseMenu.change_title),
                                   ~F.text.in_({LEXICON_BTN_LABELS_RU['cancel_edit']}))
@@ -93,11 +99,29 @@ def prepare_router() -> Router:
     admin_router.callback_query.register(media.media_change_free_prompt,
                                          F.data.in_({'media_change_free'}),
                                          StateFilter(MediaMenu.edit))
+    admin_router.callback_query.register(media.media_change_stream_link_prompt,
+                                         F.data.in_({'media_change_stream_link'}),
+                                         StateFilter(MediaMenu.edit))
+    admin_router.callback_query.register(media.media_change_action_date_prompt,
+                                         F.data.in_({'media_change_action_date'}),
+                                         StateFilter(MediaMenu.edit))
+    admin_router.callback_query.register(media.spam_stream_link,
+                                         F.data.in_({'spam_stream_link'}),
+                                         StateFilter(MediaMenu.edit))
     admin_router.message.register(practise.practise_change_description_save,
                                   StateFilter(PractiseMenu.change_description),
                                   ~F.text.in_({LEXICON_BTN_LABELS_RU['cancel_edit']}))
+    admin_router.message.register(practise.practise_change_category_save,
+                                  StateFilter(PractiseMenu.change_category),
+                                  ~F.text.in_({LEXICON_BTN_LABELS_RU['cancel_edit']}))
     admin_router.message.register(media.media_change_description_save,
                                   StateFilter(MediaMenu.change_description),
+                                  ~F.text.in_({LEXICON_BTN_LABELS_RU['cancel_edit']}))
+    admin_router.message.register(media.media_change_action_date_save,
+                                  StateFilter(MediaMenu.change_action_date),
+                                  ~F.text.in_({LEXICON_BTN_LABELS_RU['cancel_edit']}))
+    admin_router.message.register(media.media_change_stream_link_save,
+                                  StateFilter(MediaMenu.change_stream_link),
                                   ~F.text.in_({LEXICON_BTN_LABELS_RU['cancel_edit']}))
     admin_router.callback_query.register(practise.practise_change_media_prompt,
                                          F.data.in_({'practise_change_media'}),

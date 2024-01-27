@@ -33,15 +33,16 @@ async def view_practises_handler(callback: CallbackQuery, state: FSMContext):
     ))
 
 
-async def user_message_handler(callback: CallbackQuery, state: FSMContext):
-    await prepare_context(state, UserMainMenu.message, callback.message)
+async def user_message_handler(callback: CallbackQuery | Message, state: FSMContext):
+    msg = callback.message if isinstance(callback, CallbackQuery) else callback
+    await prepare_context(state, UserMainMenu.message, msg)
 
     # Пишем название раздела
-    await log_message.add_message(await callback.message.answer(
+    await log_message.add_message(await msg.answer(
         text=text_decorator.strong(LEXICON_CHAPTER_LABELS_RU['user_message']),
         reply_markup=BasicButtons.back()
     ))
-    await callback.answer(text=LEXICON_DEFAULT_MESSGES_RU['message_sent'])
+    # await callback.answer(text=LEXICON_DEFAULT_MESSGES_RU['message_sent'])
 
 
 async def forward_message_handler(message: Message, state: FSMContext):

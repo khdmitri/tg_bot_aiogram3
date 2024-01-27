@@ -23,6 +23,7 @@ alembic = "^1.13.1"
 pydantic = {extras = ["email"], version = "^2.5.3"}
 psycopg2 = "^2.9.9"
 pyqiwi = "^0.2.0"
+pytz = "^2023.3.post1"
 
 
 [build-system]

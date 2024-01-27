@@ -19,6 +19,16 @@ class MediaMenuKeyboard:
             callback_data='media_change_description'
         )
 
+        self.spam_stream_link_button = InlineKeyboardButton(
+            text=LEXICON_DEFAULT_NAMES_RU['send'],
+            callback_data='spam_stream_link'
+        )
+
+        self.change_stream_link_button = InlineKeyboardButton(
+            text=LEXICON_DEFAULT_NAMES_RU['change'],
+            callback_data='media_change_stream_link'
+        )
+
         self.change_category_button = InlineKeyboardButton(
             text=LEXICON_DEFAULT_NAMES_RU['change'],
             callback_data='media_change_category'
@@ -27,6 +37,11 @@ class MediaMenuKeyboard:
         self.change_media_button = InlineKeyboardButton(
             text=LEXICON_DEFAULT_NAMES_RU['change'],
             callback_data='media_change_media'
+        )
+
+        self.change_action_date_button = InlineKeyboardButton(
+            text=LEXICON_DEFAULT_NAMES_RU['change'],
+            callback_data='media_change_action_date'
         )
 
         self.change_free_button = InlineKeyboardButton(
@@ -67,6 +82,12 @@ class MediaMenuKeyboard:
     def get_change_description_keyboard(self):
         return InlineKeyboardMarkup(inline_keyboard=[[self.change_description_button]])
 
+    def get_spam_stream_link_keyboard(self):
+        return InlineKeyboardMarkup(inline_keyboard=[[self.spam_stream_link_button]])
+
+    def get_change_stream_link_keyboard(self):
+        return InlineKeyboardMarkup(inline_keyboard=[[self.change_stream_link_button]])
+
     def get_change_category_keyboard(self):
         return InlineKeyboardMarkup(inline_keyboard=[[self.change_category_button]])
 
@@ -78,6 +99,9 @@ class MediaMenuKeyboard:
 
     def get_change_cost_keyboard(self):
         return InlineKeyboardMarkup(inline_keyboard=[[self.change_cost_button]])
+
+    def get_change_action_date_keyboard(self):
+        return InlineKeyboardMarkup(inline_keyboard=[[self.change_action_date_button]])
 
     def get_cancel_change_keyboard(self):
         return ReplyKeyboardMarkup(

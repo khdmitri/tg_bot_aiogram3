@@ -7,7 +7,7 @@ from keyboards.inline.view_practise_menu import PractiseLessonMenuKeyboard
 from lexicon.lexicon_ru import LEXICON_CHAPTER_LABELS_RU, LEXICON_DEFAULT_NAMES_RU
 from states.admin import PractiseMenu
 from utils import log_message, text_decorator
-from utils.constants import MessageTypes
+from utils.constants import MessageTypes, PractiseCategories
 from utils.handler import prepare_context, prepare_media_group
 
 
@@ -52,7 +52,10 @@ async def show_practise(message: Message, practise: dict):
             ))
 
     async with SessionLocalAsync() as db:
-        lessons = await crud_media.get_multi_by_practise_id(db, practise_id=practise['id'])
+        if practise["category"] == PractiseCategories.ONLINE.value:
+            lessons = await crud_media.get_online_by_practise_id(db, practise_id=practise['id'])
+        else:
+            lessons = await crud_media.get_multi_by_practise_id(db, practise_id=practise['id'])
         keyboard = PractiseLessonMenuKeyboard(lessons)
         await log_message.add_message(await message.answer(
             text=text_decorator.strong(LEXICON_DEFAULT_NAMES_RU['lessons']),
