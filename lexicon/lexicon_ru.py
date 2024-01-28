@@ -11,6 +11,7 @@ LEXICON_INLINE_MENU_RU: dict[str, str] = {
 
 LEXICON_INLINE_ADMIN_MENU_RU: dict[str, str] = {
     'manage_practises': 'Управлять практиками',
+    'show_online_lessons': 'Управлять online-группами',
     'manage_page:start': 'Редактировать начальный пост',
     'manage_page:about': 'Редактировать раздел "Обо мне"',
 }
@@ -72,6 +73,15 @@ LEXICON_CHAPTER_EXIT_RU: dict[str, str] = {
     'practise_exit': '🏠 Закончить и выйти в главное меню',
     'post_exit': '🏠 Закончить и выйти в главное меню',
     'about_exit': '🏠 Выйти в главное меню',
+    'group_exit': '🏠 Выйти в главное меню',
+}
+
+LEXICON_ADMIN_ONLINE_MENU_RU: dict[str, str] = {
+    'send_group_message': 'НАПИСАТЬ ВСЕМ УЧАСТНИКАМ СООБЩЕНИЕ',
+}
+
+LEXICON_ADMIN_ONLINE_MENU_DEEP_RU: dict[str, str] = {
+    'show_online_lessons': 'НАЗАД К СПИСКУ ONLINE-ЗАНЯТИЙ',
 }
 
 LEXICON_PRACTISE_CATEGORY: dict[int, str] = {
@@ -80,6 +90,8 @@ LEXICON_PRACTISE_CATEGORY: dict[int, str] = {
 }
 
 LEXICON_DEFAULT_NAMES_RU: dict[str, str] = {
+    'group_menu_label': 'Что вы хотите сделать дальше?',
+    'admin_lessons_list': 'Список доступных уроков:',
     'checkout': 'ОТМЕНИТЬ ЗАПИСЬ',
     'already_in_group': '☯☯☯ Вы уже записаны на данное ONLINE-занятие!',
     'send': 'Отправить',
@@ -105,6 +117,7 @@ LEXICON_DEFAULT_NAMES_RU: dict[str, str] = {
     'media_content': 'Медиа-контент',
     'media_content_empty': 'Сюда пока ничего не загружено',
     'stream_link': 'Ссылка на стрим',
+    'group_prompt_message': 'Отправьте сообщение всем участникам группы 👇',
     'post_change_name': 'Укажите новое имя поста 👇',
     'post_change_order': 'Укажите порядок поста 👇',
     'post_change_post': 'Напишите пост (или загрузите фото, видео, группу медиа-объектов) 👇',

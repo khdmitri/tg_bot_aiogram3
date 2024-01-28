@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from crud.base import CRUDBase, ModelType
 from models.practise import Practise
 from schemas.practise import PractiseCreate, PractiseUpdate
-from utils.constants import MessageTypes
+from utils.constants import MessageTypes, PractiseCategories
 
 
 class CRUDPractise(CRUDBase[Practise, PractiseCreate, PractiseUpdate]):
@@ -41,6 +41,15 @@ class CRUDPractise(CRUDBase[Practise, PractiseCreate, PractiseUpdate]):
             await db.commit()
             await db.refresh(practise)
             return practise
+
+    async def get_online_practise(
+            self,
+            db: AsyncSession
+    ) -> List[ModelType]:
+
+        result = await db.execute(select(self.model).filter(self.model.category == PractiseCategories.ONLINE.value))
+
+        return result.scalars().first()
 
 
 crud_practise = CRUDPractise(Practise)

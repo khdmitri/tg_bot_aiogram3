@@ -154,7 +154,7 @@ practise_menu_keyboard = PractiseMenuKeyboard()
 
 class PractiseLessonMenuKeyboard:
 
-    def __init__(self, lessons: Optional[List[Media]] = None):
+    def __init__(self, lessons: Optional[List[Media]] = None, add_extra: bool = True):
         if isinstance(lessons, list):
             self.buttons = [
                 InlineKeyboardButton(
@@ -181,10 +181,11 @@ class PractiseLessonMenuKeyboard:
             callback_data='add_media'
         ))
 
-        self.online_buttons.append(InlineKeyboardButton(
-            text=LEXICON_DEFAULT_NAMES_RU['add_media'],
-            callback_data='add_media'
-        ))
+        if add_extra:
+            self.online_buttons.append(InlineKeyboardButton(
+                text=LEXICON_DEFAULT_NAMES_RU['add_media'],
+                callback_data='add_media'
+            ))
 
         kb_builder = InlineKeyboardBuilder()
         self.keyboard = kb_builder.row(*self.buttons, width=3).adjust(1, 2, repeat=True)

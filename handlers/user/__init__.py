@@ -16,7 +16,7 @@ def prepare_router() -> Router:
 
     user_router.message.register(start.start, CommandStart())
     user_router.message.register(start.home, Command("home"))
-    user_router.callback_query.register(start.home, F.data.in_({'practise_exit', 'post_exit', 'about_exit'}))
+    user_router.callback_query.register(start.home, F.data.in_({'practise_exit', 'post_exit', 'about_exit', 'group_exit'}))
     user_router.message.register(start.home, F.text == LEXICON_BASIC_BTNS_RU['back'])
     user_router.callback_query.register(core.user_message_handler, F.data.in_({'user_message'}))
     user_router.callback_query.register(core.view_practises_handler, F.data.in_({'view_practises'}))

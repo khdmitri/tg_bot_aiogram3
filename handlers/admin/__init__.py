@@ -5,13 +5,27 @@ from filters import ChatTypeFilter
 from filters.admin import IsAdminFilter
 from lexicon.lexicon_ru import LEXICON_BTN_LABELS_RU
 from states.admin import PractiseMenu, MediaMenu, Page
-from . import practise as practise, media, post
+from states.group import GroupMenu
+from . import practise as practise, media, post, group
 
 
 def prepare_router() -> Router:
     admin_router = Router()
     admin_router.message.filter(ChatTypeFilter("private"))
     admin_router.callback_query.filter(IsAdminFilter())
+
+    # ============= GROUP handlers ============
+
+    admin_router.callback_query.register(group.show_online_lessons, F.data.in_({'show_online_lessons'}))
+    admin_router.callback_query.register(group.view_online_lesson, F.data.startswith('online_lesson:'),
+                                         StateFilter(GroupMenu.view_lessons))
+    admin_router.callback_query.register(group.send_group_message, F.data.in_({'send_group_message'}),
+                                         StateFilter(GroupMenu.view_group))
+    admin_router.message.register(group.group_send_message_save,
+                                  StateFilter(GroupMenu.group_message_prompt),
+                                  ~F.text.in_({LEXICON_BTN_LABELS_RU['cancel_edit']}))
+
+    # ============= END of GROUP handlers =====
 
     # ============= POST handlers ============
 
