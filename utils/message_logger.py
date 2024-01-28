@@ -1,6 +1,7 @@
 import asyncio
 import functools
 
+from aiogram.exceptions import TelegramBadRequest
 from aiogram.types import Message
 from redis.asyncio import Redis
 
@@ -38,7 +39,10 @@ class LogMessage:
         if data:
             data = str(data.decode()) if isinstance(data, bytes) else data
             message_ids = [int(el) for el in data.split(",")]
-            await context.bot.delete_messages(chat_id=chat_id, message_ids=message_ids)
+            try:
+                await context.bot.delete_messages(chat_id=chat_id, message_ids=message_ids)
+            except TelegramBadRequest:
+                pass
             await self.redis.delete(key_name)
 
 
