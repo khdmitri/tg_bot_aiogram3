@@ -466,8 +466,8 @@ async def update_media(media_dict: dict, message: Message, state: FSMContext):
         async with SessionLocalAsync() as db:
             try:
                 media_db = await crud_media.get(db, id=media_dict["id"])
+                media_dict_copy = media_dict.copy()
                 if media_dict.get("action_date", None):
-                    media_dict_copy = media_dict.copy()
                     media_dict_copy["action_date"] = datetime.fromtimestamp(media_dict["action_date"])
                 update_media_schema = MediaUpdate(**media_dict_copy)
                 if media_db:

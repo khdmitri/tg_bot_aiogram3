@@ -48,14 +48,23 @@ class PractiseLessonMenuKeyboard:
 
     def __init__(self, lessons: Optional[List[Media]] = None, is_online=False):
         if isinstance(lessons, list):
-            self.buttons = [
-                InlineKeyboardButton(
-                    text=lesson.action_date.strftime("%d.%m.%Y %H:%M")
-                    if isinstance(lesson.action_date, datetime) else "",
-                    callback_data='view_lesson:' + str(lesson.id)
-                )
-                for lesson in lessons
-            ]
+            if is_online:
+                self.buttons = [
+                    InlineKeyboardButton(
+                        text=lesson.action_date.strftime("%d.%m.%Y %H:%M")
+                        if isinstance(lesson.action_date, datetime) else "",
+                        callback_data='view_lesson:' + str(lesson.id)
+                    )
+                    for lesson in lessons
+                ]
+            else:
+                self.buttons = [
+                    InlineKeyboardButton(
+                        text=lesson.title,
+                        callback_data='view_lesson:' + str(lesson.id)
+                    )
+                    for lesson in lessons
+                ]
         else:
             self.buttons = []
 

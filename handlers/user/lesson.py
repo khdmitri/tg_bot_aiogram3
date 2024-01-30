@@ -23,18 +23,25 @@ VALID_TO = 3
 ONLINE_LESSON_NUMBER = 10
 
 
-async def process_lesson(*, message: Message, lesson: Media, data: dict, menu: MediaMenuKeyboard):
+async def process_lesson(*, message: Message, lesson: Media, data: dict, menu: MediaMenuKeyboard, user: dict):
     if not lesson.is_free:
         # Урок ПЛАТНЫЙ!
         async with SessionLocalAsync() as db:
-            invoice = await crud_invoice.get_paid_invoice(db,
-                                                          practise_id=data["view_practise"]["id"],
-                                                          media_id=lesson.id)
-            if invoice:
-                await show_lesson(message, lesson.as_dict(), valid_to=invoice.valid_to)
+            full_access = user["full_access_granted"]
+            if full_access:
+                full_access = datetime.fromtimestamp(full_access)
+            if full_access >= datetime.now():
+                # Full Access Granted
+                await show_lesson(message, lesson.as_dict(), valid_to=full_access)
             else:
-                # Урок не оплачен
-                await request_payment(message, lesson.as_dict(), menu)
+                invoice = await crud_invoice.get_paid_invoice(db,
+                                                              practise_id=data["view_practise"]["id"],
+                                                              media_id=lesson.id)
+                if invoice:
+                    await show_lesson(message, lesson.as_dict(), valid_to=invoice.valid_to)
+                else:
+                    # Урок не оплачен
+                    await request_payment(message, lesson.as_dict(), menu)
     else:
         await show_lesson(message, lesson.as_dict(), valid_to=None)
 
@@ -180,6 +187,7 @@ async def process_online_lesson(*, message: Message, state: FSMContext, lesson: 
 
 async def view_lesson(callback: CallbackQuery | Message, state: FSMContext) -> None:
     data = await state.get_data()
+    user = data.get("user", None)
     if isinstance(callback, CallbackQuery):
         msg = callback.message
         lesson_id = int(callback.data.split(":")[1])
@@ -203,7 +211,7 @@ async def view_lesson(callback: CallbackQuery | Message, state: FSMContext) -> N
                                          PractiseCategories.LESSON.value) == PractiseCategories.ONLINE.value:
                 await process_online_lesson(message=msg, state=state, lesson=lesson, menu=menu)
             else:
-                await process_lesson(message=msg, lesson=lesson, data=data, menu=menu)
+                await process_lesson(message=msg, lesson=lesson, data=data, menu=menu, user=user)
 
     await log_message.add_message(await msg.answer(
         text=LEXICON_DEFAULT_NAMES_RU['practise_navigation_menu'],

@@ -11,10 +11,11 @@ from utils.constants import MessageTypes, PractiseCategories
 from utils.handler import prepare_context, prepare_media_group
 
 
-async def view_practise(callback: CallbackQuery | Message, state: FSMContext) -> None:
+async def view_practise(callback: CallbackQuery | Message, state: FSMContext, user: dict | None) -> None:
     if isinstance(callback, CallbackQuery):
         msg = callback.message
         practise_id = int(callback.data.split(":")[1])
+        await state.update_data(user=user)
     else:
         msg = callback
         data = await state.get_data()

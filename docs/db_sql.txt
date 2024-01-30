@@ -1,0 +1,3 @@
+update "user"
+set full_access_granted = create_date + interval '1 month'
+where id <= 100;

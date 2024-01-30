@@ -38,7 +38,7 @@ class User(Base):
             "internal_amount": self.internal_amount,
             "is_active": self.is_active,
             "is_admin": self.is_admin,
-            "full_access_granted": self.full_access_granted,
+            "full_access_granted": datetime.timestamp(self.full_access_granted) if self.full_access_granted else None,
         }
 
 
