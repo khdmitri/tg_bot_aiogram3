@@ -5,6 +5,7 @@ from crud import crud_invoice
 from db.session import SessionLocalAsync
 from handlers.user.core import user_message_handler
 from handlers.user.lesson import view_lesson, join_online_lesson
+from handlers.user.start import home
 from lexicon.lexicon_ru import LEXICON_DEFAULT_NAMES_RU
 from utils import log_message, text_decorator
 from utils.constants import PractiseCategories
@@ -23,7 +24,7 @@ async def pre_checkout_query(pre_checkout_q: PreCheckoutQuery):
             await pre_checkout_q.answer(ok=False)
 
 
-async def successful_payment(message: Message, state: FSMContext):
+async def successful_payment(message: Message, state: FSMContext, user: dict):
     payment_info = message.successful_payment
     invoice_uuid = payment_info.invoice_payload
     async with SessionLocalAsync() as db:
@@ -37,7 +38,12 @@ async def successful_payment(message: Message, state: FSMContext):
                 await message.answer(text=text_decorator.strong(LEXICON_DEFAULT_NAMES_RU['payment_success']))
             )
             if invoice_db.category == PractiseCategories.ONLINE.value:
-                await join_online_lesson(message, state)
+                data = await state.get_data()
+                current_lesson = data.get("view_lesson", None)
+                if current_lesson is not None:
+                    await join_online_lesson(message, state)
+                else:
+                    await home(message, state, user)
             else:
                 await view_lesson(message, state)
         else:

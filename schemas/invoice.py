@@ -23,7 +23,7 @@ from pydantic import BaseModel
 class InvoiceBase(BaseModel):
     uuid: str
     practise_id: int
-    media_id: Optional[int]
+    media_id: Optional[int] = None
     amount: int
     status: str
     user_id: int

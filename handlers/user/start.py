@@ -3,6 +3,8 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import InputFile, FSInputFile, CallbackQuery
 
 import states
+from crud import crud_invoice
+from db.session import SessionLocalAsync
 from keyboards import get_start_menu_keyboard
 from keyboards.inline.start_menu import get_nav_keyboard
 from lexicon.lexicon_ru import LEXICON_BTN_GROUP_LABELS_RU, LEXICON_CHAPTER_LABELS_RU, LEXICON_DEFAULT_NAMES_RU
@@ -29,7 +31,7 @@ async def start(msg: types.Message, state: FSMContext, user: dict) -> None:
 
     await log_message.add_message(await msg.answer(
         text=LEXICON_BTN_GROUP_LABELS_RU['start_menu'],
-        reply_markup=get_start_menu_keyboard(is_admin=user["is_admin"]))
+        reply_markup=await get_start_menu_keyboard(user_id=user["id"], is_admin=user["is_admin"]))
     )
     # print(answer)
     await state.set_state(states.user.UserMainMenu.menu)
@@ -41,7 +43,7 @@ async def about(callback: CallbackQuery, state: FSMContext):
 
     await log_message.add_message(await callback.message.answer(
         text=LEXICON_DEFAULT_NAMES_RU['practise_navigation_menu'],
-        reply_markup=get_nav_keyboard(is_admin=False))
+        reply_markup=await get_nav_keyboard(is_admin=False))
                                   )
 
 
@@ -51,12 +53,19 @@ async def home(event: types.CallbackQuery | types.Message, state: FSMContext, us
     # Чистим контент прошлого состояния
     await message_logger.log_message.clean_content(message.chat.id, message)
 
+    # Проверяем, если у пользователя есть доступные online уроки
+    async with SessionLocalAsync() as db:
+        invoice = await crud_invoice.get_valid_online_invoice(db, user_id=user["id"])
+        if invoice and invoice.ticket_count > 0:
+            await log_message.add_message(await message.answer(
+                text=text_decorator.strong(LEXICON_DEFAULT_NAMES_RU["available_online"]) + str(invoice.ticket_count))
+                                          )
     await log_message.add_message(await message.answer(
         text=text_decorator.strong(LEXICON_CHAPTER_LABELS_RU['home']))
                                   )
     await log_message.add_message(await message.answer(
         text=LEXICON_BTN_GROUP_LABELS_RU['start_menu'],
-        reply_markup=get_start_menu_keyboard(is_admin=user["is_admin"]))
+        reply_markup=await get_start_menu_keyboard(user_id=user["id"], is_admin=user["is_admin"]))
     )
 
     await state.set_state(states.user.UserMainMenu.menu)

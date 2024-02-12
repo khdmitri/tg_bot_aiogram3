@@ -3,12 +3,13 @@ from datetime import datetime
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
 
-from crud import crud_media, crud_invoice, crud_group, crud_user
+from crud import crud_media, crud_invoice, crud_group, crud_user, crud_practise
 from db.session import SessionLocalAsync
 from keyboards.inline.view_media_menu import MediaMenuKeyboard
 from lexicon.lexicon_ru import LEXICON_CHAPTER_LABELS_RU, LEXICON_DEFAULT_NAMES_RU
 from models.group import Group
 from models.media import Media
+from models.practise import Practise
 from schemas import GroupCreate
 from states.admin import MediaMenu
 from utils import log_message, text_decorator
@@ -67,12 +68,29 @@ async def add_member_to_group(message: Message, lesson: dict, user: dict, menu: 
         ))
 
 
+async def get_subjects(callback: CallbackQuery, state: FSMContext):
+    view_practise = None
+    lesson = None
+    if callback.data.endswith('_direct'):
+        await state.update_data(view_lesson=None)
+        async with SessionLocalAsync() as db:
+            online_practise: Practise = await crud_practise.get_online_practise(db)
+            if online_practise:
+                view_practise = online_practise.as_dict()
+    else:
+        data = await state.get_data()
+        view_practise = data["view_practise"]
+        lesson = data["view_lesson"]
+
+    return view_practise, lesson
+
+
 async def online_pay_action(callback: CallbackQuery, state: FSMContext, user: dict):
-    data = await state.get_data()
+    view_practise, lesson = await get_subjects(callback, state)
     await state.update_data(user=user)
     invoice_inst = Invoice(user=user,
-                           practise_id=data["view_practise"]["id"],
-                           lesson=data["view_lesson"],
+                           practise_id=view_practise["id"],
+                           lesson=lesson,
                            message=callback.message,
                            is_online=True,
                            ticket_count=1
@@ -81,11 +99,12 @@ async def online_pay_action(callback: CallbackQuery, state: FSMContext, user: di
 
 
 async def online_abonement_pay_action(callback: CallbackQuery, state: FSMContext, user: dict):
-    data = await state.get_data()
+    view_practise, lesson = await get_subjects(callback, state)
+
     await state.update_data(user=user)
     invoice_inst = Invoice(user=user,
-                           practise_id=data["view_practise"]["id"],
-                           lesson=data["view_lesson"],
+                           practise_id=view_practise["id"],
+                           lesson=lesson,
                            message=callback.message,
                            is_online=True,
                            ticket_count=ONLINE_LESSON_NUMBER

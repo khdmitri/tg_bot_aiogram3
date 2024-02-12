@@ -17,18 +17,23 @@ CURRENCY_STEP = {
 }
 
 DISCOUNT = 0.9
+COST = 300
+TITLE = 'ONLINE-Урок'
 
 
 class Invoice:
     def __init__(self, *, user: dict,
                  practise_id: int,
-                 lesson: dict,
+                 lesson: dict | None,
                  message: Message,
                  is_online: bool = False,
                  ticket_count: int = 1):
         self.user = user
-        self.practise_id = practise_id,
-        self.lesson = lesson
+        self.practise_id = practise_id
+        self.lesson = lesson if lesson is not None else {
+            "cost": COST,
+            "title": TITLE,
+        }
         self.message = message
         self.ticket_count = ticket_count
         self.is_online = is_online
@@ -50,8 +55,8 @@ class Invoice:
     async def _create_invoice(self, db: AsyncSession, *, amount: int, invoice_id: str, valid_to: Optional[int] = None):
         invoice_schema = InvoiceCreate(**{
             'uuid': invoice_id,
-            'practise_id': self.lesson['practise_id'],
-            'media_id': self.lesson['id'],
+            'practise_id': self.practise_id,
+            'media_id': self.lesson.get("id", None),
             'amount': amount,
             'status': 'CREATED',
             'user_id': self.user['id'],

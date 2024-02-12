@@ -6,7 +6,13 @@ LEXICON_MENU_RU: dict[str, str] = {
 LEXICON_INLINE_MENU_RU: dict[str, str] = {
     'about': 'Обо мне',
     'view_practises': 'Смотреть практики',
-    'user_message': 'Написать сообщение',
+    'view_practise:': '😍🤸👉 ЗАПИСАТЬСЯ НА ONLINE-УРОК',
+    'user_message': '✉ Написать сообщение ✉',
+}
+
+LEXICON_BUY_INLINE_MENU_RU: dict[str, str] = {
+    'online_pay_action_direct': '🤸 Купить ONLINE-занятие в 1 клик 🤸',
+    'online_abonement_pay_action_direct': '🤸 Купить ONLINE-абонемент со скидкой 🤸',
 }
 
 LEXICON_INLINE_ADMIN_MENU_RU: dict[str, str] = {
@@ -90,6 +96,7 @@ LEXICON_PRACTISE_CATEGORY: dict[int, str] = {
 }
 
 LEXICON_DEFAULT_NAMES_RU: dict[str, str] = {
+    'available_online': '🧘 ДОСТУПНО ONLINE-ЗАНЯТИЙ: ',
     'group_menu_label': 'Что вы хотите сделать дальше?',
     'admin_lessons_list': 'Список доступных уроков:',
     'checkout': 'ОТМЕНИТЬ ЗАПИСЬ',

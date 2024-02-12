@@ -45,7 +45,7 @@ class CRUDPractise(CRUDBase[Practise, PractiseCreate, PractiseUpdate]):
     async def get_online_practise(
             self,
             db: AsyncSession
-    ) -> List[ModelType]:
+    ) -> ModelType:
 
         result = await db.execute(select(self.model).filter(self.model.category == PractiseCategories.ONLINE.value))
 
