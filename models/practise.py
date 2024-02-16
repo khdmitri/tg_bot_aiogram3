@@ -20,6 +20,7 @@ class Practise(Base):
     is_published = Column(Boolean, default=False)
     media_group_id: Mapped[int] = mapped_column(BigInteger, nullable=True)
     category: Mapped[int] = mapped_column(Integer, nullable=True)
+    file_resource_link: Mapped[str] = mapped_column(String, nullable=True)
 
     def as_dict(self):
         return {

@@ -32,7 +32,3 @@ async def get_db_async() -> Generator:
 async def get_new_session() -> AsyncSession:
     db_gen = get_db_async()
     return await anext(db_gen)
-
-# async def async_main():
-#     async with engine.begin() as conn:
-#         await conn.run_sync(Base.metadata.create_all)

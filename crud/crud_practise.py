@@ -13,10 +13,16 @@ class CRUDPractise(CRUDBase[Practise, PractiseCreate, PractiseUpdate]):
     async def get_practises_by_order(
             self,
             db: AsyncSession,
-            only_published: bool = False
+            only_published: bool = False,
+            include_online: bool = True
     ) -> List[ModelType]:
-        if only_published:
+        if only_published and include_online:
             result = await db.execute(select(self.model).filter(self.model.is_published.is_(True)).order_by(
+                self.model.order)
+            )
+        elif only_published:
+            result = await db.execute(select(self.model).filter(self.model.is_published.is_(True),
+                                                                self.model.category != PractiseCategories.ONLINE.value).order_by(
                 self.model.order)
             )
         else:
