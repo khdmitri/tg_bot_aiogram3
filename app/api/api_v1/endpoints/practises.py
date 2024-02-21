@@ -36,10 +36,12 @@ async def webapp_data_action(
     Process webapp_data.
     """
     bot_instance = BotInstanceSingleton().get_instance()
-    message = InputTextMessageContent(message_text="Это основное тело сообщения", parse_mode="html")
-    answer = InlineQueryResultArticle(type="article",
-                                      id=":".join([str(data.user_id), str(data.action), str(data.order_id)]),
-                                      title="Вы заказали оплату, она сейчас будет произведена",
-                                      input_message_content=message)
-    result: SentWebAppMessage = await bot_instance.answer_web_app_query(data.query_id, answer)
+    # message = InputTextMessageContent(message_text="Это основное тело сообщения", parse_mode="html")
+    # answer = InlineQueryResultArticle(type="article",
+    #                                   id=":".join([str(data.user_id), str(data.action), str(data.order_id)]),
+    #                                   title="Вы заказали оплату, она сейчас будет произведена",
+    #                                   input_message_content=message)
+    # result: SentWebAppMessage = await bot_instance.answer_web_app_query(data.query_id, answer)
+    result = await bot_instance.send_message(data.user_id,
+                                             text=f"Data received: {data.action}:{data.user_id}:{data.order_id}")
     print("RESULT:", result)
