@@ -22,6 +22,7 @@ from keyboards.set_menu import set_main_menu
 from middlewares import StructLoggingMiddleware
 from middlewares.db import UserMiddleware
 from middlewares.message_logger import MessageLoggerMiddleware
+from utils.bot_instance import BotInstanceSingleton
 
 
 async def create_db_connections(dp: Dispatcher) -> None:
@@ -263,6 +264,8 @@ async def main() -> None:
     # else:
     dp.startup.register(aiogram_on_startup_polling)
     dp.shutdown.register(aiogram_on_shutdown_polling)
+    bot_instance = BotInstanceSingleton()
+    bot_instance.init_bot_instance(bot)
     await dp.start_polling(bot)
 
 
