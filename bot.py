@@ -22,11 +22,41 @@ from keyboards.set_menu import set_main_menu
 from middlewares import StructLoggingMiddleware
 from middlewares.db import UserMiddleware
 from middlewares.message_logger import MessageLoggerMiddleware
-from utils.bot_instance import BotInstanceSingleton
-from utils.constants import BOT_INSTANCE
+
+# await async_main()
+aiogram_session_logger = utils.logging.setup_logger().bind(type="aiogram_session")
+
+if config.USE_CUSTOM_API_SERVER:
+    session = utils.smart_session.SmartAiogramAiohttpSession(
+        api=TelegramAPIServer(
+            base=config.CUSTOM_API_SERVER_BASE,
+            file=config.CUSTOM_API_SERVER_FILE,
+            is_local=config.CUSTOM_API_SERVER_IS_LOCAL,
+        ),
+        json_loads=orjson.loads,
+        logger=aiogram_session_logger,
+    )
+else:
+    session = utils.smart_session.SmartAiogramAiohttpSession(
+        json_loads=orjson.loads,
+        logger=aiogram_session_logger,
+    )
+
+bot = Bot(config.BOT_TOKEN, parse_mode="HTML", session=session)
+dp = Dispatcher(
+    storage=RedisStorage(
+        redis=Redis(
+            host=config.FSM_HOST,
+            password=config.FSM_PASSWORD,
+            port=config.FSM_PORT,
+            db=0,
+        ),
+        key_builder=DefaultKeyBuilder(with_bot_id=True),
+    )
+)
 
 
-async def create_db_connections(dp: Dispatcher) -> None:
+async def create_db_connections() -> None:
     logger: structlog.typing.FilteringBoundLogger = dp["business_logger"]
 
     # logger.debug("Connecting to PostgreSQL", db="main")
@@ -79,7 +109,7 @@ async def create_db_connections(dp: Dispatcher) -> None:
         )
 
 
-async def close_db_connections(dp: Dispatcher) -> None:
+async def close_db_connections() -> None:
     if "temp_bot_cloud_session" in dp.workflow_data:
         temp_bot_cloud_session: AiohttpSession = dp["temp_bot_cloud_session"]
         await temp_bot_cloud_session.close()
@@ -94,7 +124,7 @@ async def close_db_connections(dp: Dispatcher) -> None:
         await cache_pool.aclose()
 
 
-def setup_handlers(dp: Dispatcher) -> None:
+def setup_handlers() -> None:
     # @dp.pre_checkout_query(lambda query: True)
     # async def pre_checkout_query(pre_checkout_q: PreCheckoutQuery):
     #     await pre_checkout_q.answer(ok=True)
@@ -108,7 +138,7 @@ def setup_handlers(dp: Dispatcher) -> None:
     dp.include_router(handlers.admin.prepare_router())
 
 
-def setup_middlewares(dp: Dispatcher) -> None:
+def setup_middlewares() -> None:
     dp.update.outer_middleware(StructLoggingMiddleware(logger=dp["aiogram_logger"]))
     dp.update.middleware(UserMiddleware())
     # dp.message.outer_middleware(ThrottlingMiddleware(redis=Redis(
@@ -120,20 +150,20 @@ def setup_middlewares(dp: Dispatcher) -> None:
     dp.update.middleware(MessageLoggerMiddleware())
 
 
-def setup_logging(dp: Dispatcher) -> None:
+def setup_logging() -> None:
     dp["aiogram_logger"] = utils.logging.setup_logger().bind(type="aiogram")
     dp["db_logger"] = utils.logging.setup_logger().bind(type="db")
     dp["cache_logger"] = utils.logging.setup_logger().bind(type="cache")
     dp["business_logger"] = utils.logging.setup_logger().bind(type="business")
 
 
-async def setup_aiogram(dp: Dispatcher) -> None:
-    setup_logging(dp)
+async def setup_aiogram() -> None:
+    setup_logging()
     logger = dp["aiogram_logger"]
     logger.debug("Configuring aiogram")
-    await create_db_connections(dp)
-    setup_handlers(dp)
-    setup_middlewares(dp)
+    await create_db_connections()
+    setup_handlers()
+    setup_middlewares()
     logger.info("Configured aiogram")
 
 
@@ -162,8 +192,8 @@ async def aiohttp_on_shutdown(app: web.Application) -> None:
     await dp.emit_shutdown(**workflow_data)
 
 
-async def aiogram_on_startup_webhook(dispatcher: Dispatcher, bot: Bot) -> None:
-    await setup_aiogram(dispatcher)
+async def aiogram_on_startup_webhook(dispatcher: Dispatcher) -> None:
+    await setup_aiogram()
     webhook_logger = dispatcher["aiogram_logger"].bind(
         webhook_url=config.MAIN_WEBHOOK_ADDRESS
     )
@@ -178,30 +208,30 @@ async def aiogram_on_startup_webhook(dispatcher: Dispatcher, bot: Bot) -> None:
     webhook_logger.info("Configured webhook")
 
 
-async def aiogram_on_shutdown_webhook(dispatcher: Dispatcher, bot: Bot) -> None:
-    dispatcher["aiogram_logger"].debug("Stopping webhook")
-    await close_db_connections(dispatcher)
+async def aiogram_on_shutdown_webhook() -> None:
+    dp["aiogram_logger"].debug("Stopping webhook")
+    await close_db_connections(dp)
     await bot.session.close()
-    await dispatcher.storage.close()
-    dispatcher["aiogram_logger"].info("Stopped webhook")
+    await dp.storage.close()
+    dp["aiogram_logger"].info("Stopped webhook")
 
 
-async def aiogram_on_startup_polling(dispatcher: Dispatcher, bot: Bot) -> None:
+async def aiogram_on_startup_polling() -> None:
     await bot.delete_webhook(drop_pending_updates=True)
-    await setup_aiogram(dispatcher)
-    dispatcher["aiogram_logger"].info("Started polling")
+    await setup_aiogram()
+    dp["aiogram_logger"].info("Started polling")
     await set_main_menu(bot)
 
 
-async def aiogram_on_shutdown_polling(dispatcher: Dispatcher, bot: Bot) -> None:
-    dispatcher["aiogram_logger"].debug("Stopping polling")
-    await close_db_connections(dispatcher)
+async def aiogram_on_shutdown_polling() -> None:
+    dp["aiogram_logger"].debug("Stopping polling")
+    await close_db_connections()
     await bot.session.close()
-    await dispatcher.storage.close()
-    dispatcher["aiogram_logger"].info("Stopped polling")
+    await dp.storage.close()
+    dp["aiogram_logger"].info("Stopped polling")
 
 
-async def setup_aiohttp_app(bot: Bot, dp: Dispatcher) -> web.Application:
+async def setup_aiohttp_app() -> web.Application:
     scheduler = aiojobs.Scheduler()
     app = web.Application()
     subapps: list[tuple[str, web.Application]] = [
@@ -221,36 +251,7 @@ async def setup_aiohttp_app(bot: Bot, dp: Dispatcher) -> web.Application:
 
 
 async def main() -> None:
-    # await async_main()
-    aiogram_session_logger = utils.logging.setup_logger().bind(type="aiogram_session")
 
-    if config.USE_CUSTOM_API_SERVER:
-        session = utils.smart_session.SmartAiogramAiohttpSession(
-            api=TelegramAPIServer(
-                base=config.CUSTOM_API_SERVER_BASE,
-                file=config.CUSTOM_API_SERVER_FILE,
-                is_local=config.CUSTOM_API_SERVER_IS_LOCAL,
-            ),
-            json_loads=orjson.loads,
-            logger=aiogram_session_logger,
-        )
-    else:
-        session = utils.smart_session.SmartAiogramAiohttpSession(
-            json_loads=orjson.loads,
-            logger=aiogram_session_logger,
-        )
-    bot = Bot(config.BOT_TOKEN, parse_mode="HTML", session=session)
-    dp = Dispatcher(
-        storage=RedisStorage(
-            redis=Redis(
-                host=config.FSM_HOST,
-                password=config.FSM_PASSWORD,
-                port=config.FSM_PORT,
-                db=0,
-            ),
-            key_builder=DefaultKeyBuilder(with_bot_id=True),
-        )
-    )
     dp["aiogram_session_logger"] = aiogram_session_logger
 
     # if config.USE_WEBHOOK:
@@ -265,7 +266,6 @@ async def main() -> None:
     # else:
     dp.startup.register(aiogram_on_startup_polling)
     dp.shutdown.register(aiogram_on_shutdown_polling)
-    BOT_INSTANCE["instance"] = bot
     await dp.start_polling(bot)
 
 
