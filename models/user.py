@@ -48,6 +48,7 @@ class Invoice(Base):
     create_date = Column(DateTime, server_default=func.now())
     update_date = Column(DateTime, onupdate=func.now())
     practise_id: Mapped[int] = mapped_column(ForeignKey("practise.id", ondelete='SET NULL'))
+    is_full_practise: Mapped[bool] = mapped_column(Boolean, default=False)
     media_id: Mapped[int] = mapped_column(ForeignKey("media.id", ondelete='SET NULL'), nullable=True)
     amount = Column(BigInteger)
     status = Column(String(32), default="CREATED") # CREATED|PAID

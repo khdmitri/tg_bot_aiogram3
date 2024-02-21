@@ -2,10 +2,11 @@ import uuid
 from datetime import datetime, timedelta
 from typing import Optional
 
-from aiogram.types import Message
+from aiogram import Bot
+from aiogram.types import Message, LabeledPrice
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from crud import crud_invoice
+from crud import crud_invoice, crud_practise
 from data import config
 from db.session import SessionLocalAsync
 from lexicon.lexicon_ru import LEXICON_DEFAULT_NAMES_RU
@@ -25,7 +26,7 @@ class Invoice:
     def __init__(self, *, user: dict,
                  practise_id: int,
                  lesson: dict | None,
-                 message: Message,
+                 message: Message | None,
                  is_online: bool = False,
                  ticket_count: int = 1):
         self.user = user
@@ -93,3 +94,22 @@ class Invoice:
                 await self.message.answer_invoice(**payload)
             else:
                 await self.message.answer(text=LEXICON_DEFAULT_NAMES_RU['payment_error'])
+
+    async def create_invoice_link(self, bot: Bot, discount: int = 0):
+        async with SessionLocalAsync() as db:
+            practise = await crud_practise.get(db, id=self.practise_id)
+            if practise:
+                medias = practise.medias
+                total = 0
+                for media in medias:
+                    if not media.is_free:
+                        total += media.cost
+                if total > 0:
+                    lPrice: LabeledPrice = LabeledPrice(label="руб", amount=int(total - total*discount/100)*CURRENCY_STEP["RUB"])
+                    prices = [lPrice]
+                    return await bot.create_invoice_link(title=practise.title, description=practise.description,
+                                                         payload=str(uuid.uuid4())+"::"+"1"+"::"+self.user["tg_id"],
+                                                         provider_token=config.UKASSA_PROVIDER_TOKEN_LIVE,
+                                                         currency="RUB",
+                                                         prices=prices)
+        return None

@@ -1,4 +1,4 @@
-from typing import List, Any
+from typing import List, Any, Union
 
 from aiogram import Dispatcher, Bot
 from aiogram.types import InlineQueryResultArticle, InputTextMessageContent, SentWebAppMessage
@@ -10,8 +10,11 @@ from app.api import deps
 from crud import crud_practise
 from schemas import Practise
 from bot import bot
+from utils.invoice import Invoice
 
 router = APIRouter()
+
+FULL_PRACTISE_DISCOUNT = 20
 
 
 @router.get("/", response_model=List[schemas.Practise])
@@ -30,18 +33,11 @@ async def read_practises(
 @router.post("/webapp_data")
 async def webapp_data_action(
         *,
-        db: AsyncSession = Depends(deps.get_db_async),
         data: schemas.WebAppData
-) -> Any:
+) -> Union[str | None]:
     """
     Process webapp_data.
     """
-    # message = InputTextMessageContent(message_text="Это основное тело сообщения", parse_mode="html")
-    # answer = InlineQueryResultArticle(type="article",
-    #                                   id=":".join([str(data.user_id), str(data.action), str(data.order_id)]),
-    #                                   title="Вы заказали оплату, она сейчас будет произведена",
-    #                                   input_message_content=message)
-    # result: SentWebAppMessage = await bot_instance.answer_web_app_query(data.query_id, answer)
-    result = await bot.send_message(data.user_id,
-                                    text=f"Data received: {data.action}:{data.user_id}:{data.order_id}")
-    print("RESULT:", result)
+    invoice_inst = Invoice(user={"tg_id": data.user_id}, practise_id=data.order_id, lesson=None, message=None)
+    link = await invoice_inst.create_invoice_link(bot=bot, discount=FULL_PRACTISE_DISCOUNT)
+    return link
