@@ -13,6 +13,11 @@ class PractiseCategories(Enum):
     LESSON = 1
     ONLINE = 2
 
+
+BOT_INSTANCE = {
+    "instance": None
+}
+
 # if __name__ == '__main__':
 #     var = MessageTypes.PHOTO
 #     print(var)

@@ -9,6 +9,7 @@ from app.api import deps
 from crud import crud_practise
 from schemas import Practise
 from utils.bot_instance import BotInstanceSingleton
+from utils.constants import BOT_INSTANCE
 
 router = APIRouter()
 
@@ -35,7 +36,8 @@ async def webapp_data_action(
     """
     Process webapp_data.
     """
-    bot_instance = BotInstanceSingleton().get_instance()
+    bot_instance = BOT_INSTANCE["instance"]
+    print("BOT_INSTANCE:", bot_instance)
     # message = InputTextMessageContent(message_text="Это основное тело сообщения", parse_mode="html")
     # answer = InlineQueryResultArticle(type="article",
     #                                   id=":".join([str(data.user_id), str(data.action), str(data.order_id)]),
