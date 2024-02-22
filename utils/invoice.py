@@ -103,12 +103,15 @@ class Invoice:
         logger.info("Try to create invoice LINK!")
         async with SessionLocalAsync() as db:
             practise = await crud_practise.get(db, id=self.practise_id)
+            logger.info(f"Practise ID: {self.practise_id}")
             if practise:
                 medias = practise.medias
+                logger.info(f"Medias count: {len(medias)}")
                 total = 0
                 for media in medias:
                     if not media.is_free:
                         total += media.cost
+                logger.info(f"Total: {total}")
                 if total > 0:
                     lPrice: LabeledPrice = LabeledPrice(label="руб", amount=int(total - total*discount/100)*CURRENCY_STEP["RUB"])
                     prices = [lPrice]
@@ -120,4 +123,6 @@ class Invoice:
                     print("LINK:", link)
                     logger.info(f"LINK: {link}")
                     return link
+            else:
+                logger.info("Practise is None")
         return None
