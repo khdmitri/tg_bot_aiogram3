@@ -107,9 +107,11 @@ class Invoice:
                 if total > 0:
                     lPrice: LabeledPrice = LabeledPrice(label="руб", amount=int(total - total*discount/100)*CURRENCY_STEP["RUB"])
                     prices = [lPrice]
-                    return await bot.create_invoice_link(title=practise.title, description=practise.description,
+                    link = await bot.create_invoice_link(title=practise.title, description=practise.description,
                                                          payload=str(uuid.uuid4())+"::"+"1"+"::"+self.user["tg_id"],
                                                          provider_token=config.UKASSA_PROVIDER_TOKEN_LIVE,
                                                          currency="RUB",
                                                          prices=prices)
+                    print("LINK:", link)
+                    return link
         return None
