@@ -1,3 +1,4 @@
+import logging
 import uuid
 from datetime import datetime, timedelta
 from typing import Optional
@@ -12,6 +13,9 @@ from db.session import SessionLocalAsync
 from lexicon.lexicon_ru import LEXICON_DEFAULT_NAMES_RU
 from schemas import InvoiceCreate
 from utils.constants import PractiseCategories
+from utils.logger import get_logger
+
+logger = get_logger(logging.DEBUG)
 
 CURRENCY_STEP = {
     "RUB": 100,
@@ -96,6 +100,7 @@ class Invoice:
                 await self.message.answer(text=LEXICON_DEFAULT_NAMES_RU['payment_error'])
 
     async def create_invoice_link(self, bot: Bot, discount: int = 0):
+        logger.info("Try to create invoice LINK!")
         async with SessionLocalAsync() as db:
             practise = await crud_practise.get(db, id=self.practise_id)
             if practise:
@@ -113,5 +118,6 @@ class Invoice:
                                                          currency="RUB",
                                                          prices=prices)
                     print("LINK:", link)
+                    logger.info(f"LINK: {link}")
                     return link
         return None
