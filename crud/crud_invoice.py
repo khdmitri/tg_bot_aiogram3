@@ -11,9 +11,13 @@ from utils.constants import PractiseCategories
 
 class CRUDInvoice(CRUDBase[Invoice, InvoiceCreate, InvoiceUpdate]):
     async def get_paid_invoice(self,
-                               db: AsyncSession, practise_id: int, media_id: int
+                               db: AsyncSession,
+                               practise_id: int,
+                               media_id: int | None,
+                               user_id: int
                                ) -> Invoice:
         result = await db.execute(select(Invoice).filter(
+            Invoice.user_id == user_id,
             Invoice.practise_id == practise_id,
             Invoice.media_id == media_id,
             Invoice.status == 'PAID',

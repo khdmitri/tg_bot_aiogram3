@@ -57,13 +57,14 @@ class Invoice:
 
         return invoice
 
-    async def _create_invoice(self, db: AsyncSession, *, amount: int, invoice_id: str, valid_to: Optional[int] = None):
+    async def _create_invoice(self, db: AsyncSession, *, amount: int, invoice_id: str, valid_to: Optional[int] = None,
+                              status: str = "CREATED"):
         invoice_schema = InvoiceCreate(**{
             'uuid': invoice_id,
             'practise_id': self.practise_id,
             'media_id': self.lesson.get("id", None),
             'amount': amount,
-            'status': 'CREATED',
+            'status': status,
             'user_id': self.user['id'],
             'valid_to': datetime.now() + timedelta(days=valid_to * 30) if valid_to else None,
             'ticket_count': self.ticket_count,
@@ -74,9 +75,9 @@ class Invoice:
 
     async def send_invoice(self, valid_to: Optional[int] = None):
         invoice_id = str(uuid.uuid4())
-        amount = self.lesson["cost"]*CURRENCY_STEP["RUB"]*self.ticket_count
+        amount = self.lesson["cost"] * CURRENCY_STEP["RUB"] * self.ticket_count
         if self.ticket_count > 1:
-            amount = int(amount*DISCOUNT)
+            amount = int(amount * DISCOUNT)
         payload = {
             "title": self.lesson["title"],
             "description": LEXICON_DEFAULT_NAMES_RU['payment_description'],
@@ -113,10 +114,14 @@ class Invoice:
                         total += media.cost
                 logger.info(f"Total: {total}")
                 if total > 0:
-                    lPrice: LabeledPrice = LabeledPrice(label="руб", amount=int(total - total*discount/100)*CURRENCY_STEP["RUB"])
+                    lPrice: LabeledPrice = LabeledPrice(label="руб",
+                                                        amount=int(total - total * discount / 100) * CURRENCY_STEP[
+                                                            "RUB"])
                     prices = [lPrice]
                     link = await bot.create_invoice_link(title=practise.title, description=practise.description,
-                                                         payload=str(uuid.uuid4())+"::"+"1"+"::"+str(self.user["tg_id"]),
+                                                         payload=str(uuid.uuid4()) + "::" + str(
+                                                             self.practise_id) + "::" +
+                                                                 str(self.user["tg_id"]),
                                                          provider_token=config.UKASSA_PROVIDER_TOKEN_LIVE,
                                                          currency="RUB",
                                                          prices=prices)
@@ -126,3 +131,13 @@ class Invoice:
             else:
                 logger.info("Practise is None")
         return None
+
+    async def create_invoice_full_practise_paid(self, *, amount: int, invoice_id: str, valid_to: Optional[int] = None,
+                                                status: str = "PAID"):
+        async with SessionLocalAsync() as db:
+            invoice = await self._create_invoice(db, amount=amount, invoice_id=invoice_id, valid_to=valid_to,
+                                                 status=status)
+            if invoice:
+                return True
+            else:
+                return False

@@ -37,7 +37,9 @@ async def process_lesson(*, message: Message, lesson: Media, data: dict, menu: M
             else:
                 invoice = await crud_invoice.get_paid_invoice(db,
                                                               practise_id=data["view_practise"]["id"],
-                                                              media_id=lesson.id)
+                                                              media_id=lesson.id,
+                                                              user_id=user["id"]
+                                                              )
                 if invoice:
                     await show_lesson(message, lesson.as_dict(), valid_to=invoice.valid_to)
                 else:

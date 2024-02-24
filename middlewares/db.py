@@ -30,7 +30,10 @@ class UserMiddleware(BaseMiddleware):
             user = await crud_user.get_by_tg_id(db, obj.from_user.id)
 
             if user:
-                updated_user = UserUpdate(id=user.id, last_visit=datetime.datetime.now())
+                updated_user = UserUpdate(id=user.id,
+                                          username=obj.from_user.username,
+                                          fullname=obj.from_user.full_name,
+                                          last_visit=datetime.datetime.now())
                 user = await crud_user.update(db, db_obj=user, obj_in=updated_user)
                 data["user"] = user.as_dict()
             else:
