@@ -47,14 +47,13 @@ async def webapp_data_action(
 async def get_paid_invoice(
         *,
         db: AsyncSession = Depends(deps.get_db_async),
-        tg_id: int,
-        practise_id: int
+        data: schemas.PractisePaidRequest
 ) -> Union[str | None]:
     """
     Search for paid invoice.
     """
-    user = await crud_user.get_by_tg_id(db, tg_id=tg_id)
+    user = await crud_user.get_by_tg_id(db, tg_id=data.tg_id)
     if user:
-        invoice = await crud_invoice.get_paid_invoice(db, practise_id=practise_id, media_id=None, user_id=user.id)
+        invoice = await crud_invoice.get_paid_invoice(db, practise_id=data.practise_id, media_id=None, user_id=user.id)
         return invoice
     return None

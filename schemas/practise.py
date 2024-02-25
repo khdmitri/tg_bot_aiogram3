@@ -12,6 +12,11 @@ from pydantic import BaseModel
 # thumbs = Column(String, unique=True)
 
 
+class PractisePaidRequest(BaseModel):
+    practise_id: int
+    tg_id: int
+
+
 class Media(BaseModel):
     id: int
     is_free: bool = True
