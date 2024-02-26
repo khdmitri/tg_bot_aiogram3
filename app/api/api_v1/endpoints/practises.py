@@ -55,7 +55,6 @@ async def get_paid_invoice(
     Search for paid invoice.
     """
     user = await crud_user.get_by_tg_id(db, tg_id=data.tg_id)
-    print(f"Got User: {user}")
     logger.info(f"Got User: {user}")
     if user:
         invoice = await crud_invoice.get_paid_invoice(db, practise_id=data.practise_id, media_id=None, user_id=user.id)
