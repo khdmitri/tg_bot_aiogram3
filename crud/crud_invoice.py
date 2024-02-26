@@ -16,13 +16,22 @@ class CRUDInvoice(CRUDBase[Invoice, InvoiceCreate, InvoiceUpdate]):
                                media_id: int | None,
                                user_id: int
                                ) -> Invoice:
-        result = await db.execute(select(Invoice).filter(
-            Invoice.user_id == user_id,
-            Invoice.practise_id == practise_id,
-            Invoice.media_id == media_id,
-            Invoice.status == 'PAID',
-            Invoice.valid_to >= datetime.now()
-        ))
+        if media_id is not None:
+            result = await db.execute(select(Invoice).filter(
+                Invoice.user_id == user_id,
+                Invoice.practise_id == practise_id,
+                Invoice.media_id == media_id,
+                Invoice.status == 'PAID',
+                Invoice.valid_to >= datetime.now()
+            ))
+        else:
+            result = await db.execute(select(Invoice).filter(
+                Invoice.user_id == user_id,
+                Invoice.practise_id == practise_id,
+                Invoice.is_full_practise.is_(True),
+                Invoice.status == 'PAID',
+                Invoice.valid_to >= datetime.now()
+            ))
         return result.scalars().first()
 
     async def get_online_invoice(self, db: AsyncSession, user_id: int) -> Invoice:

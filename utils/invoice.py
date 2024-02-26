@@ -58,7 +58,7 @@ class Invoice:
         return invoice
 
     async def _create_invoice(self, db: AsyncSession, *, amount: int, invoice_id: str, valid_to: Optional[int] = None,
-                              status: str = "CREATED"):
+                              status: str = "CREATED", is_full_practise=False):
         invoice_schema = InvoiceCreate(**{
             'uuid': invoice_id,
             'practise_id': self.practise_id,
@@ -68,7 +68,8 @@ class Invoice:
             'user_id': self.user['id'],
             'valid_to': datetime.now() + timedelta(days=valid_to * 30) if valid_to else None,
             'ticket_count': self.ticket_count,
-            'category': PractiseCategories.ONLINE.value if self.is_online else PractiseCategories.LESSON.value
+            'category': PractiseCategories.ONLINE.value if self.is_online else PractiseCategories.LESSON.value,
+            'is_full_practise': is_full_practise
         })
 
         return await crud_invoice.create(db, obj_in=invoice_schema)
