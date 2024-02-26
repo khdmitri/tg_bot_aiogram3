@@ -8,6 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 import schemas
 from app.api import deps
 from crud import crud_practise, crud_invoice, crud_user
+from models.user import Invoice
 from schemas import Practise
 from bot import bot
 from utils.invoice import Invoice
@@ -50,13 +51,12 @@ async def get_paid_invoice(
         *,
         db: AsyncSession = Depends(deps.get_db_async),
         data: schemas.PractisePaidRequest
-) -> Union[schemas.Invoice | None]:
+) -> schemas.Invoice | None:
     """
     Search for paid invoice.
     """
     user = await crud_user.get_by_tg_id(db, tg_id=data.tg_id)
     logger.info(f"Got User: {user}")
     if user:
-        invoice = await crud_invoice.get_paid_invoice(db, practise_id=data.practise_id, media_id=None, user_id=user.id)
-        return invoice
+        return await crud_invoice.get_paid_invoice(db, practise_id=data.practise_id, media_id=None, user_id=user.id)
     return None
