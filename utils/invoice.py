@@ -137,7 +137,7 @@ class Invoice:
                                                 status: str = "PAID"):
         async with SessionLocalAsync() as db:
             invoice = await self._create_invoice(db, amount=amount, invoice_id=invoice_id, valid_to=valid_to,
-                                                 status=status)
+                                                 status=status, is_full_practise=True)
             if invoice:
                 return True
             else:
