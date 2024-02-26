@@ -35,5 +35,5 @@ class InvoiceInDB(InvoiceInDBBase):
 
 
 class Invoice(InvoiceInDBBase):
-    create_date: datetime
-    update_date: datetime
+    create_date: Optional[datetime] = None
+    update_date: Optional[datetime] = None
