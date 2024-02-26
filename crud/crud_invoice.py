@@ -37,6 +37,7 @@ class CRUDInvoice(CRUDBase[Invoice, InvoiceCreate, InvoiceUpdate]):
             ))
 
         logger.info(f"get_paid returns: {result.scalars().first()}")
+        print(f"get_paid returns: {result.scalars().first()}")
         return result.scalars().first()
 
     async def get_online_invoice(self, db: AsyncSession, user_id: int) -> Invoice:
