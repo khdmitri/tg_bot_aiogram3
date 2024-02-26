@@ -50,7 +50,7 @@ async def get_paid_invoice(
         *,
         db: AsyncSession = Depends(deps.get_db_async),
         data: schemas.PractisePaidRequest
-) -> Union[str | None]:
+) -> Union[schemas.Invoice | None]:
     """
     Search for paid invoice.
     """
