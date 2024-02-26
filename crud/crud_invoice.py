@@ -7,6 +7,9 @@ from crud.base import CRUDBase
 from models.user import Invoice
 from schemas.invoice import InvoiceCreate, InvoiceUpdate
 from utils.constants import PractiseCategories
+from utils.logger import get_logger
+
+logger = get_logger()
 
 
 class CRUDInvoice(CRUDBase[Invoice, InvoiceCreate, InvoiceUpdate]):
@@ -32,6 +35,8 @@ class CRUDInvoice(CRUDBase[Invoice, InvoiceCreate, InvoiceUpdate]):
                 Invoice.status == 'PAID',
                 Invoice.valid_to >= datetime.now()
             ))
+
+        logger.info(f"get_paid returns: {result.scalars().first()}")
         return result.scalars().first()
 
     async def get_online_invoice(self, db: AsyncSession, user_id: int) -> Invoice:
