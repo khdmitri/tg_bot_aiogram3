@@ -22,6 +22,7 @@ class Practise(Base):
     category: Mapped[int] = mapped_column(Integer, nullable=True)
     file_resource_link: Mapped[str] = mapped_column(String, nullable=True)
     channel_resource_link: Mapped[str] = mapped_column(String, nullable=True)
+    channel_chat_id: Mapped[int] = mapped_column(BigInteger, nullable=True)
 
     def as_dict(self):
         return {

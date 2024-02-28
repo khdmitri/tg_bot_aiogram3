@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 import schemas
 from app.api import deps
-from crud import crud_practise, crud_invoice, crud_user
+from crud import crud_practise, crud_invoice, crud_user, crud_media
 from models.user import Invoice
 from schemas import Practise
 from bot import bot
@@ -60,3 +60,15 @@ async def get_paid_invoice(
     if user:
         return await crud_invoice.get_paid_invoice(db, practise_id=data.practise_id, media_id=None, user_id=user.id)
     return None
+
+
+@router.get("/online", response_model=List[schemas.Media])
+async def read_practises_online(
+        db: AsyncSession = Depends(deps.get_db_async)
+) -> List[Practise]:
+    """
+    Retrieve practises online.
+    """
+    practise = await crud_practise.get_online_practise(db)
+    practises = await crud_media.get_online_by_practise_id(db, practise_id=practise.id)
+    return practises

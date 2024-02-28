@@ -24,6 +24,8 @@ from middlewares.db import UserMiddleware
 from middlewares.message_logger import MessageLoggerMiddleware
 
 # await async_main()
+from utils.constants import ALL_UPDATES
+
 aiogram_session_logger = utils.logging.setup_logger().bind(type="aiogram_session")
 
 if config.USE_CUSTOM_API_SERVER:
@@ -136,6 +138,7 @@ def setup_handlers() -> None:
     dp.include_router(handlers.payment.prepare_router())
     dp.include_router(handlers.user.prepare_router())
     dp.include_router(handlers.admin.prepare_router())
+    dp.include_router(handlers.channel.prepare_router())
 
 
 def setup_middlewares() -> None:
@@ -264,6 +267,7 @@ async def main() -> None:
     #         port=config.MAIN_WEBHOOK_LISTENING_PORT,
     #     )
     # else:
+    await bot.get_updates(allowed_updates=ALL_UPDATES)
     dp.startup.register(aiogram_on_startup_polling)
     dp.shutdown.register(aiogram_on_shutdown_polling)
     await dp.start_polling(bot)

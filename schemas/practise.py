@@ -42,6 +42,7 @@ class PractiseBase(BaseModel):
     is_published: bool = False
     file_resource_link: Optional[str] = None
     channel_resource_link: Optional[str] = None
+    channel_chat_id: Optional[int] = None
 
 
 class PractiseCreate(PractiseBase):
