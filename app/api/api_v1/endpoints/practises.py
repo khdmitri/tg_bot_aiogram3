@@ -72,3 +72,19 @@ async def read_practises_online(
     practise = await crud_practise.get_online_practise(db)
     practises = await crud_media.get_online_by_practise_id(db, practise_id=practise.id)
     return practises
+
+
+@router.post("/get_paid_invoice_online")
+async def get_paid_invoice_online(
+        *,
+        db: AsyncSession = Depends(deps.get_db_async),
+        data: schemas.UserByTgId
+) -> schemas.Invoice | None:
+    """
+    Search for paid onlline invoice.
+    """
+    user = await crud_user.get_by_tg_id(db, tg_id=data.tg_id)
+    if user:
+        return await crud_invoice.get_valid_online_invoice(db, user_id=user.id)
+    return None
+

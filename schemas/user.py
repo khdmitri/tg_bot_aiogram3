@@ -4,6 +4,10 @@ from typing import Optional, List
 from pydantic import BaseModel, EmailStr
 
 
+class UserByTgId(BaseModel):
+    tg_id: int
+
+
 class UserPayment(BaseModel):
     paid_amount: int
     user_id: int
