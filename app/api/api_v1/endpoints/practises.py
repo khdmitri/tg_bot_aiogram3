@@ -65,7 +65,7 @@ async def get_paid_invoice(
 @router.get("/online", response_model=List[schemas.Media])
 async def read_practises_online(
         db: AsyncSession = Depends(deps.get_db_async)
-) -> List[Practise]:
+) -> List[schemas.Media]:
     """
     Retrieve practises online.
     """
