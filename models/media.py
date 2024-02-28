@@ -20,7 +20,7 @@ class Media(Base):
     title = Column(String)
     category = Column(String(32))
     description = Column(String)
-    thumbs = Column(String, unique=True)
+    thumbs = Column(String, nullable=True)
     cost = Column(BigInteger)
     create_date = Column(DateTime, server_default=func.now())
     update_date = Column(DateTime, onupdate=func.now())

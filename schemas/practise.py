@@ -10,6 +10,7 @@ from pydantic import BaseModel
 # media_type = Column(String(32))
 # medias = relationship("Media", back_populates="practise", lazy="selectin")
 # thumbs = Column(String, unique=True)
+from schemas import MediaBase
 
 
 class PractisePaidRequest(BaseModel):
@@ -65,4 +66,4 @@ class PractiseInDB(PractiseInDBBase):
 
 
 class Practise(PractiseInDBBase):
-    medias: List[Media]
+    medias: List[MediaBase]

@@ -25,9 +25,9 @@ class Practise(BaseModel):
     order: int
     title: Optional[str]
     description: Optional[str]
-    media_file_id: Optional[str]
-    media_type: Optional[int]
-    thumbs: Optional[str]
+    media_file_id: Optional[str] = None
+    media_type: Optional[int] = None
+    thumbs: Optional[str] = None
 
     class Config:
         from_attributes = True
