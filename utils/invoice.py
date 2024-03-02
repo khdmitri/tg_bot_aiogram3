@@ -12,7 +12,7 @@ from data import config
 from db.session import SessionLocalAsync
 from lexicon.lexicon_ru import LEXICON_DEFAULT_NAMES_RU
 from schemas import InvoiceCreate
-from utils.constants import PractiseCategories
+from utils.constants import PractiseCategories, WEBAPP_ACTIONS
 from utils.logger import get_logger
 
 logger = get_logger(logging.DEBUG)
@@ -24,6 +24,8 @@ CURRENCY_STEP = {
 DISCOUNT = 0.9
 COST = 300
 TITLE = 'ONLINE-Урок'
+DEFAULT_ONLINE_COST = 300
+DEFAULT_ABONEMENT_COUNT = 10
 
 
 class Invoice:
@@ -101,28 +103,32 @@ class Invoice:
             else:
                 await self.message.answer(text=LEXICON_DEFAULT_NAMES_RU['payment_error'])
 
-    async def create_invoice_link(self, bot: Bot, discount: int = 0):
+    async def create_invoice_link(self, bot: Bot, action: int, discount: int = 0):
         logger.info("Try to create invoice LINK!")
         async with SessionLocalAsync() as db:
             practise = await crud_practise.get(db, id=self.practise_id)
             logger.info(f"Practise ID: {self.practise_id}")
             if practise:
-                medias = practise.medias
-                logger.info(f"Medias count: {len(medias)}")
                 total = 0
-                for media in medias:
-                    if not media.is_free:
-                        total += media.cost
-                logger.info(f"Total: {total}")
+                match action:
+                    case WEBAPP_ACTIONS.buy_practise.value:
+                        medias = practise.medias
+                        for media in medias:
+                            if not media.is_free:
+                                total += media.cost
+                    case WEBAPP_ACTIONS.buy_online.value:
+                        total = self.lesson.get("cost", DEFAULT_ONLINE_COST)
+                    case WEBAPP_ACTIONS.buy_abonement.value:
+                        total = DEFAULT_ONLINE_COST*DEFAULT_ABONEMENT_COUNT
+
                 if total > 0:
                     lPrice: LabeledPrice = LabeledPrice(label="руб",
                                                         amount=int(total - total * discount / 100) * CURRENCY_STEP[
                                                             "RUB"])
                     prices = [lPrice]
                     link = await bot.create_invoice_link(title=practise.title, description=practise.description,
-                                                         payload=str(uuid.uuid4()) + "::" + str(
-                                                             self.practise_id) + "::" +
-                                                                 str(self.user["tg_id"]),
+                                                         payload=str(uuid.uuid4()) + "::" + str(action) + "::" + str(
+                                                             self.practise_id) + "::" + str(self.user["tg_id"]),
                                                          provider_token=config.UKASSA_PROVIDER_TOKEN_LIVE,
                                                          currency="RUB",
                                                          prices=prices)

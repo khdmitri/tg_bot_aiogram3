@@ -37,3 +37,4 @@ class InvoiceInDB(InvoiceInDBBase):
 class Invoice(InvoiceInDBBase):
     create_date: Optional[datetime] = None
     update_date: Optional[datetime] = None
+    ticket_count: int

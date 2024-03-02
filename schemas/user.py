@@ -8,6 +8,11 @@ class UserByTgId(BaseModel):
     tg_id: int
 
 
+class UserGroupMember(BaseModel):
+    tg_id: int
+    media_id: int
+
+
 class UserPayment(BaseModel):
     paid_amount: int
     user_id: int

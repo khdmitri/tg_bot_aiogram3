@@ -24,3 +24,9 @@ ALL_UPDATES = [
     "inline_query", "chosen_inline_result", "callback_query", "shipping_query", "pre_checkout_query", "poll",
     "poll_answer", "my_chat_member", "chat_member", "chat_join_request", "chat_boost", "removed_chat_boost",
 ]
+
+
+class WEBAPP_ACTIONS(Enum):
+    buy_practise = 0
+    buy_online = 1
+    buy_abonement = 2
