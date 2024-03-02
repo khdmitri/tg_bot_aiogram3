@@ -119,7 +119,7 @@ class Invoice:
                     case WEBAPP_ACTIONS.buy_online.value:
                         total = self.lesson.get("cost", DEFAULT_ONLINE_COST)
                     case WEBAPP_ACTIONS.buy_abonement.value:
-                        total = DEFAULT_ONLINE_COST*DEFAULT_ABONEMENT_COUNT
+                        total = DEFAULT_ONLINE_COST * DEFAULT_ABONEMENT_COUNT
 
                 if total > 0:
                     lPrice: LabeledPrice = LabeledPrice(label="руб",
@@ -144,6 +144,15 @@ class Invoice:
         async with SessionLocalAsync() as db:
             invoice = await self._create_invoice(db, amount=amount, invoice_id=invoice_id, valid_to=valid_to,
                                                  status=status, is_full_practise=True)
+            if invoice:
+                return True
+            else:
+                return False
+
+    async def create_invoice_online_paid(self, *, amount: int, invoice_id: str, status: str = "PAID"):
+        async with SessionLocalAsync() as db:
+            invoice = await self._create_invoice(db, amount=amount, invoice_id=invoice_id, valid_to=None,
+                                                 status=status, is_full_practise=False)
             if invoice:
                 return True
             else:

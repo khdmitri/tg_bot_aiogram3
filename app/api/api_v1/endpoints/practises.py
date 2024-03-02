@@ -8,6 +8,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 import schemas
 from app.api import deps
 from crud import crud_practise, crud_invoice, crud_user, crud_media, crud_group
+from db.session import SessionLocalAsync
+from models.group import Group
 from models.media import Media
 from models.user import User
 from schemas import Practise, GroupCreate
@@ -155,3 +157,25 @@ async def add_user_group(
                 await db.refresh(invoice)
                 return await _join_to_group(db=db, media=media, user=user)
     return None
+
+
+@router.post("/leave_group_online")
+async def remove_user_group(
+        *,
+        db: AsyncSession = Depends(deps.get_db_async),
+        data: schemas.UserGroupMember
+) -> bool:
+    lesson = await crud_media.get(db, id=data.media_id)
+    user = await crud_user.get_by_tg_id(db, tg_id=data.tg_id)
+    if not lesson.is_free:
+        invoice = await crud_invoice.get_valid_online_invoice(db, user.id)
+        if invoice:
+            invoice.ticket_count += 1
+            db.add(invoice)
+            await db.commit()
+            await db.refresh(invoice)
+    member: Group = await crud_group.is_member(db, user_id=user["id"], media_id=lesson["id"])
+    if member:
+        await crud_group.remove(db, id=member.id)
+
+    return True
