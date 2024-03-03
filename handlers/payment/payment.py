@@ -40,8 +40,8 @@ async def successful_payment(message: Message, state: FSMContext, user: dict):
     if len(res) > 1:
         invoice_uuid = res[0]
         action = res[1]
-        order_id = int(res[1])
-        tg_id = int(res[2])
+        order_id = int(res[2])
+        tg_id = int(res[3])
 
         # 1 Get User by tg_id or create a new one
         async with SessionLocalAsync() as db:
