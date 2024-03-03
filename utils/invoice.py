@@ -110,15 +110,19 @@ class Invoice:
             logger.info(f"Practise ID: {self.practise_id}")
             if practise:
                 total = 0
+                order_id = -1
                 match action:
                     case WEBAPP_ACTIONS.buy_practise.value:
+                        order_id = self.practise_id
                         medias = practise.medias
                         for media in medias:
                             if not media.is_free:
                                 total += media.cost
                     case WEBAPP_ACTIONS.buy_online.value:
+                        order_id = self.lesson.get("id")
                         total = self.lesson.get("cost", DEFAULT_ONLINE_COST)
                     case WEBAPP_ACTIONS.buy_abonement.value:
+                        order_id = self.practise_id
                         total = DEFAULT_ONLINE_COST * DEFAULT_ABONEMENT_COUNT
 
                 if total > 0:
@@ -128,11 +132,10 @@ class Invoice:
                     prices = [lPrice]
                     link = await bot.create_invoice_link(title=practise.title, description=practise.description,
                                                          payload=str(uuid.uuid4()) + "::" + str(action) + "::" + str(
-                                                             self.practise_id) + "::" + str(self.user["tg_id"]),
+                                                             order_id) + "::" + str(self.user["tg_id"]),
                                                          provider_token=config.UKASSA_PROVIDER_TOKEN_LIVE,
                                                          currency="RUB",
                                                          prices=prices)
-                    print("LINK:", link)
                     logger.info(f"LINK: {link}")
                     return link
             else:
