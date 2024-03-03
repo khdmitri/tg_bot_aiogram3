@@ -13,8 +13,11 @@ from schemas import GroupCreate
 from utils import log_message, text_decorator
 from utils.constants import PractiseCategories, WEBAPP_ACTIONS
 from utils.invoice import Invoice, DEFAULT_ABONEMENT_COUNT
+from utils.logger import get_logger
 
 PRACTISE_VALID_TO = 2  # months
+
+logger = get_logger()
 
 
 async def pre_checkout_query(pre_checkout_q: PreCheckoutQuery):
@@ -39,13 +42,16 @@ async def successful_payment(message: Message, state: FSMContext, user: dict):
     res = payment_info.invoice_payload.split("::")
     if len(res) > 1:
         invoice_uuid = res[0]
-        action = res[1]
+        action = int(res[1])
         order_id = int(res[2])
         tg_id = int(res[3])
+
+        logger.info(f"Received Data: {invoice_uuid=}\n{action=}\n{order_id=}\n{tg_id=}")
 
         # 1 Get User by tg_id or create a new one
         async with SessionLocalAsync() as db:
             user = await crud_user.get_by_tg_id_or_create(db=db, tg_id=tg_id)
+            logger.info(f"User obtained: {user}")
 
             # 2 Create an invoice with PAID status for new user
             if user:
