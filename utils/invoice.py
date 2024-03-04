@@ -157,3 +157,13 @@ class Invoice:
         async with SessionLocalAsync() as db:
             return await self._create_invoice(db, amount=amount, invoice_id=invoice_id, valid_to=None,
                                               status=status, is_full_practise=False)
+
+    async def use_invoice_ticket(self, *, invoice_id: int):
+        async with SessionLocalAsync() as db:
+            invoice = await crud_invoice.get(db, id=invoice_id)
+            invoice.ticket_count -= 1
+            db.add(invoice)
+            await db.commit()
+            await db.refresh(invoice)
+
+            return invoice

@@ -115,9 +115,7 @@ async def successful_payment(message: Message, state: FSMContext, user: dict):
                                 'Ссылка на стрим будет отправлена Вам дополнительно',
                             ]
                             if group:
-                                invoice.ticket_count -= 1
-                                await db.commit()
-                                await db.refresh(invoice)
+                                await invoice_inst.use_invoice_ticket(invoice_id=invoice.id)
                                 logger.info("Invoice was successfully updated!")
                                 await message.answer(text=text_decorator.strong("\n".join(m)))
                         else:
