@@ -126,12 +126,11 @@ async def if_user_group_member(
 
 
 async def _join_to_group(*, media: Media, user: User, db):
-    if media.is_free:
-        group_schema = GroupCreate(**{
-            "user_id": user.id,
-            "media_id": media.id
-        })
-        return await crud_group.create(db, obj_in=group_schema)
+    group_schema = GroupCreate(**{
+        "user_id": user.id,
+        "media_id": media.id
+    })
+    return await crud_group.create(db, obj_in=group_schema)
 
 
 @router.post("/join_group_online")
