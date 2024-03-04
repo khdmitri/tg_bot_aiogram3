@@ -44,6 +44,7 @@ class MediaBase(BaseModel):
     description: Optional[str]
     cost: Optional[int]
     media_group_id: Optional[int]
+    stream_link: Optional[str] = None
 
 
 class MediaCreate(MediaBase):
