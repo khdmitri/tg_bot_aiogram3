@@ -96,10 +96,10 @@ async def successful_payment(message: Message, state: FSMContext, user: dict):
                                                is_online=True,
                                                ticket_count=1
                                                )
-                        result = await invoice_inst.create_invoice_online_paid(amount=payment_info.total_amount,
-                                                                               invoice_id=invoice_uuid,
-                                                                               status='PAID')
-                        if result:
+                        invoice = await invoice_inst.create_invoice_online_paid(amount=payment_info.total_amount,
+                                                                                invoice_id=invoice_uuid,
+                                                                                status='PAID')
+                        if invoice:
                             group_schema = GroupCreate(**{
                                 "user_id": user.id,
                                 "media_id": lesson.id
@@ -114,6 +114,10 @@ async def successful_payment(message: Message, state: FSMContext, user: dict):
                                 'Ссылка на стрим будет отправлена Вам дополнительно',
                             ]
                             if group:
+                                invoice.ticket_count -= 1
+                                db.add(invoice)
+                                await db.commit()
+                                await db.refresh(invoice)
                                 await message.answer(text=text_decorator.strong("\n".join(m)))
                         else:
                             await message.answer(

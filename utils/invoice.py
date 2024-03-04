@@ -11,6 +11,7 @@ from crud import crud_invoice, crud_practise
 from data import config
 from db.session import SessionLocalAsync
 from lexicon.lexicon_ru import LEXICON_DEFAULT_NAMES_RU
+from models.user import Invoice
 from schemas import InvoiceCreate
 from utils.constants import PractiseCategories, WEBAPP_ACTIONS
 from utils.logger import get_logger
@@ -60,7 +61,7 @@ class Invoice:
         return invoice
 
     async def _create_invoice(self, db: AsyncSession, *, amount: int, invoice_id: str, valid_to: Optional[int] = None,
-                              status: str = "CREATED", is_full_practise=False):
+                              status: str = "CREATED", is_full_practise=False) -> Invoice:
         invoice_schema = InvoiceCreate(**{
             'uuid': invoice_id,
             'practise_id': self.practise_id,
@@ -152,11 +153,11 @@ class Invoice:
             else:
                 return False
 
-    async def create_invoice_online_paid(self, *, amount: int, invoice_id: str, status: str = "PAID"):
+    async def create_invoice_online_paid(self, *, amount: int, invoice_id: str, status: str = "PAID") -> Invoice | bool:
         async with SessionLocalAsync() as db:
             invoice = await self._create_invoice(db, amount=amount, invoice_id=invoice_id, valid_to=None,
                                                  status=status, is_full_practise=False)
             if invoice:
-                return True
+                return invoice
             else:
                 return False
