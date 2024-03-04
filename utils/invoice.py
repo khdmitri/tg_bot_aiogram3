@@ -153,10 +153,19 @@ class Invoice:
             else:
                 return False
 
-    async def create_invoice_online_paid(self, *, amount: int, invoice_id: str, status: str = "PAID") -> Invoice | bool:
+    async def update_invoice_online_paid(self, *, amount: int, user_id: int, invoice_id: str,
+                                         status: str = "PAID") -> Invoice:
         async with SessionLocalAsync() as db:
-            return await self._create_invoice(db, amount=amount, invoice_id=invoice_id, valid_to=None,
-                                              status=status, is_full_practise=False)
+            invoice = await crud_invoice.get_online_invoice(db, user_id=user_id)
+            if invoice and invoice.status == 'PAID':
+                invoice.ticket_count += self.ticket_count
+                db.add(invoice)
+                await db.commit()
+                await db.refresh(invoice)
+                return invoice
+            else:
+                return await self._create_invoice(db, amount=amount, invoice_id=invoice_id, valid_to=None,
+                                                  status=status, is_full_practise=False)
 
     async def use_invoice_ticket(self, *, invoice_id: int):
         async with SessionLocalAsync() as db:

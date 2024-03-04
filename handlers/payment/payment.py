@@ -96,8 +96,9 @@ async def successful_payment(message: Message, state: FSMContext, user: dict):
                                                is_online=True,
                                                ticket_count=1
                                                )
-                        invoice = await invoice_inst.create_invoice_online_paid(amount=payment_info.total_amount,
+                        invoice = await invoice_inst.update_invoice_online_paid(amount=payment_info.total_amount,
                                                                                 invoice_id=invoice_uuid,
+                                                                                user_id=user.id,
                                                                                 status='PAID')
                         if invoice:
                             logger.info(f"Invoice received: {invoice}")
@@ -135,8 +136,9 @@ async def successful_payment(message: Message, state: FSMContext, user: dict):
                                                is_online=True,
                                                ticket_count=DEFAULT_ABONEMENT_COUNT
                                                )
-                        result = await invoice_inst.create_invoice_online_paid(amount=payment_info.total_amount,
+                        result = await invoice_inst.update_invoice_online_paid(amount=payment_info.total_amount,
                                                                                invoice_id=invoice_uuid,
+                                                                               user_id=user.id,
                                                                                status='PAID')
                         if result:
                             m = [
