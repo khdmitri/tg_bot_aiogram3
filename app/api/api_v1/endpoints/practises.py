@@ -174,7 +174,7 @@ async def remove_user_group(
             db.add(invoice)
             await db.commit()
             await db.refresh(invoice)
-    member: Group = await crud_group.is_member(db, user_id=user["id"], media_id=lesson["id"])
+    member: Group = await crud_group.is_member(db, user_id=user.id, media_id=lesson.id)
     if member:
         await crud_group.remove(db, id=member.id)
 
