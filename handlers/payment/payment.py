@@ -116,7 +116,6 @@ async def successful_payment(message: Message, state: FSMContext, user: dict):
                             ]
                             if group:
                                 invoice.ticket_count -= 1
-                                db.add(invoice)
                                 await db.commit()
                                 await db.refresh(invoice)
                                 logger.info("Invoice was successfully updated!")
