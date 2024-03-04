@@ -168,8 +168,8 @@ async def remove_user_group(
     lesson = await crud_media.get(db, id=data.media_id)
     user = await crud_user.get_by_tg_id(db, tg_id=data.tg_id)
     if not lesson.is_free:
-        invoice = await crud_invoice.get_valid_online_invoice(db, user.id)
-        if invoice:
+        invoice = await crud_invoice.get_online_invoice(db, user.id)
+        if invoice and invoice.status == 'PAID':
             invoice.ticket_count += 1
             db.add(invoice)
             await db.commit()
