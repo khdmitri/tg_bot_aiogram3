@@ -155,9 +155,5 @@ class Invoice:
 
     async def create_invoice_online_paid(self, *, amount: int, invoice_id: str, status: str = "PAID") -> Invoice | bool:
         async with SessionLocalAsync() as db:
-            invoice = await self._create_invoice(db, amount=amount, invoice_id=invoice_id, valid_to=None,
-                                                 status=status, is_full_practise=False)
-            if invoice:
-                return invoice
-            else:
-                return False
+            return await self._create_invoice(db, amount=amount, invoice_id=invoice_id, valid_to=None,
+                                              status=status, is_full_practise=False)

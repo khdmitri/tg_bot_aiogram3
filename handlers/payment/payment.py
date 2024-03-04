@@ -100,11 +100,13 @@ async def successful_payment(message: Message, state: FSMContext, user: dict):
                                                                                 invoice_id=invoice_uuid,
                                                                                 status='PAID')
                         if invoice:
+                            logger.info(f"Invoice received: {invoice}")
                             group_schema = GroupCreate(**{
                                 "user_id": user.id,
                                 "media_id": lesson.id
                             })
                             group = await crud_group.create(db, obj_in=group_schema)
+                            logger.info(f"Group received: {group}")
                             m = [
                                 f'Вы успешно записаны на online-занятие!',
                                 f'Online занятие по йоге состоится: {datetime.fromtimestamp(lesson["action_date"]).strftime("%d.%m.%Y %H:%M")}, ВРЕМЯ МОСКОВСКОЕ (GMT+3)',
@@ -118,7 +120,8 @@ async def successful_payment(message: Message, state: FSMContext, user: dict):
                                 db.add(invoice)
                                 await db.commit()
                                 await db.refresh(invoice)
-                                await message.answer(text=text_decorator.strong("\n".join(m)))
+                                logger.info("Invoice was successfully updated!")
+                                await message.bot.send_message(user.tg_id, text=text_decorator.strong("\n".join(m)))
                         else:
                             await message.answer(
                                 text=text_decorator.strong(
