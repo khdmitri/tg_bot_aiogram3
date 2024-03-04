@@ -109,7 +109,7 @@ async def successful_payment(message: Message, state: FSMContext, user: dict):
                             logger.info(f"Group received: {group}")
                             m = [
                                 f'Вы успешно записаны на online-занятие!',
-                                f'Online занятие по йоге состоится: {datetime.fromtimestamp(lesson.action_date).strftime("%d.%m.%Y %H:%M")}, ВРЕМЯ МОСКОВСКОЕ (GMT+3)',
+                                f'Online занятие по йоге состоится: {lesson.action_date.strftime("%d.%m.%Y %H:%M")}, ВРЕМЯ МОСКОВСКОЕ (GMT+3)',
                                 f'Тема занятия: {lesson.title}',
                                 f'Для участия перейдите по ссылке на стрим: <a>{lesson.stream_link}</a>' if lesson.stream_link else
                                 'Ссылка на стрим будет отправлена Вам дополнительно',
