@@ -57,5 +57,15 @@ class CRUDPractise(CRUDBase[Practise, PractiseCreate, PractiseUpdate]):
 
         return result.scalars().first()
 
+    async def get_practise_by_channel_id(
+            self,
+            db: AsyncSession,
+            channel_id: int
+    ) -> ModelType:
+
+        result = await db.execute(select(self.model).filter(self.model.channel_chat_id == channel_id))
+
+        return result.scalars().first()
+
 
 crud_practise = CRUDPractise(Practise)

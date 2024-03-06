@@ -52,6 +52,16 @@ class CRUDInvoice(CRUDBase[Invoice, InvoiceCreate, InvoiceUpdate]):
                                                          ))
         return result.scalars().first()
 
+    async def get_valid_channel_invoice(self, db: AsyncSession, user_id: int, practise_id: int) -> Invoice:
+        result = await db.execute(select(Invoice).filter(Invoice.user_id == user_id,
+                                                         Invoice.practise_id == practise_id,
+                                                         Invoice.category == PractiseCategories.LESSON.value,
+                                                         Invoice.status == 'PAID',
+                                                         Invoice.is_full_practise.is_(True),
+                                                         Invoice.valid_to >= datetime.now()
+                                                         ))
+        return result.scalars().first()
+
 
     async def get_invoice_by_uuid(self, db: AsyncSession, uuid: str) -> Invoice:
         result = await db.execute(select(Invoice).filter(Invoice.uuid == uuid))
