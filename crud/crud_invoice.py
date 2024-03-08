@@ -62,7 +62,6 @@ class CRUDInvoice(CRUDBase[Invoice, InvoiceCreate, InvoiceUpdate]):
                                                          ))
         return result.scalars().first()
 
-
     async def get_invoice_by_uuid(self, db: AsyncSession, uuid: str) -> Invoice:
         result = await db.execute(select(Invoice).filter(Invoice.uuid == uuid))
         return result.scalars().first()
