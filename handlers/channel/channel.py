@@ -16,7 +16,7 @@ async def check_access_right(update: types.ChatJoinRequest):
     async with SessionLocalAsync() as db:
         user = await crud_user.get_by_tg_id(db, tg_id=user.id)
         if user:
-            practise = await crud_practise.get_practise_by_channel_id(channel_id=chat.id)
+            practise = await crud_practise.get_practise_by_channel_id(db=db, channel_id=chat.id)
             if practise:
                 total_cost = 0
                 for media in practise.medias:
