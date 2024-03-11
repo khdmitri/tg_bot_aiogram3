@@ -1,3 +1,5 @@
+import traceback
+
 from aiogram import types
 from aiogram.enums import ChatMemberStatus
 from aiogram.exceptions import TelegramBadRequest
@@ -41,11 +43,13 @@ async def check_access_right(update: types.ChatJoinRequest):
                         if chat_member and chat_member.status == ChatMemberStatus.MEMBER:
                             await update.approve()
                         else:
+                            logger.info(f"CHAT MEMBER HAS NO STATUS {ChatMemberStatus.MEMBER} because it is {chat_member.status}")
                             await bot.send_message(update.user_chat_id,
                                                    text="К сожалению, Вы не подписаны на наш канал: https://t.me/yoga_master_mind.\n" +
                                                         "Подпишитесь на наш канал и попробуйте снова.")
                             await update.decline()
-                    except TelegramBadRequest:
+                    except TelegramBadRequest as tbr:
+                        logger.error(traceback.format_exc())
                         await bot.send_message(update.user_chat_id,
                                                text="К сожалению, Вы не подписаны на наш канал: https://t.me/yoga_master_mind.\n" +
                                                     "Подпишитесь на наш канал и попробуйте снова.")
