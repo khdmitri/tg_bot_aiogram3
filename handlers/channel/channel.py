@@ -17,10 +17,10 @@ MAIN_CHANNEL_ID = -1002112555471
 async def check_access_right(update: types.ChatJoinRequest):
     chat = update.chat
     logger.info(f"JoinUserToChat ID: {chat.id}")
-    user = update.from_user
-    logger.info(f"User ID: {user.id}")
+    user_tg = update.from_user
+    logger.info(f"User ID: {user_tg.id}")
     async with SessionLocalAsync() as db:
-        user = await crud_user.get_by_tg_id(db, tg_id=user.id)
+        user = await crud_user.get_by_tg_id_or_create(db, tg_id=user_tg.id)
         if user:
             practise = await crud_practise.get_practise_by_channel_id(db=db, channel_id=chat.id)
             if practise:
@@ -28,7 +28,7 @@ async def check_access_right(update: types.ChatJoinRequest):
                 for media in practise.medias:
                     total_cost += media.cost
                 if total_cost > 0:
-                    invoice = await crud_invoice.get_valid_channel_invoice(db, user_id=user.id, practise_id=practise.id)
+                    invoice = await crud_invoice.get_valid_channel_invoice(db, user_id=user.tg_id, practise_id=practise.id)
                     if invoice:
                         await update.approve()
                     else:
