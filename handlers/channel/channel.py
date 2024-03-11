@@ -1,4 +1,5 @@
 from aiogram import types
+from aiogram.enums import ChatMemberStatus
 from aiogram.types import ChatMemberUpdated
 
 from crud import crud_user, crud_practise, crud_invoice
@@ -6,6 +7,8 @@ from db.session import SessionLocalAsync
 from utils.logger import get_logger
 
 logger = get_logger()
+
+MAIN_CHANNEL_ID = -1002112555471
 
 
 async def check_access_right(update: types.ChatJoinRequest):
@@ -29,8 +32,16 @@ async def check_access_right(update: types.ChatJoinRequest):
                         logger.warning("Invoice not found")
                         await update.decline()
                 else:
-                    logger.info("Practise has no commercial lessons, approved...")
-                    await update.approve()
+                    logger.info("Practise has no commercial lessons, check if chat member...")
+                    bot = update.bot
+                    chat_member = await bot.get_chat_member(chat_id=MAIN_CHANNEL_ID, user_id=user.id)
+                    logger.info(f"Received ChatMember: {chat_member}")
+                    if chat_member and chat_member.status == ChatMemberStatus.MEMBER:
+                        await update.approve()
+                    else:
+                        await update.answer(text="К сожалению, Вы не подписаны на наш канал: https://t.me/yoga_master_mind.\n"+
+                                            "Подпишитесь на наш канал и попробуйте снова.")
+                        await update.decline()
             else:
                 logger.warning("Practise is invalid")
                 await update.decline()
