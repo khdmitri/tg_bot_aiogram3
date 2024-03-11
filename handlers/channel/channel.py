@@ -41,12 +41,12 @@ async def check_access_right(update: types.ChatJoinRequest):
                         if chat_member and chat_member.status == ChatMemberStatus.MEMBER:
                             await update.approve()
                         else:
-                            await bot.send_message(user.id,
+                            await bot.send_message(update.user_chat_id,
                                                    text="К сожалению, Вы не подписаны на наш канал: https://t.me/yoga_master_mind.\n" +
                                                         "Подпишитесь на наш канал и попробуйте снова.")
                             await update.decline()
                     except TelegramBadRequest:
-                        await bot.send_message(user.id,
+                        await bot.send_message(update.user_chat_id,
                                                text="К сожалению, Вы не подписаны на наш канал: https://t.me/yoga_master_mind.\n" +
                                                     "Подпишитесь на наш канал и попробуйте снова.")
             else:
