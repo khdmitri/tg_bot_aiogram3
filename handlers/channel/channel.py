@@ -28,7 +28,7 @@ async def check_access_right(update: types.ChatJoinRequest):
                 for media in practise.medias:
                     total_cost += media.cost
                 if total_cost > 0:
-                    invoice = await crud_invoice.get_valid_channel_invoice(db, user_id=user.tg_id, practise_id=practise.id)
+                    invoice = await crud_invoice.get_valid_channel_invoice(db, user_id=user.id, practise_id=practise.id)
                     if invoice:
                         await update.approve()
                     else:
@@ -38,7 +38,7 @@ async def check_access_right(update: types.ChatJoinRequest):
                     logger.info("Practise has no commercial lessons, check if chat member...")
                     bot = update.bot
                     try:
-                        chat_member = await bot.get_chat_member(chat_id=MAIN_CHANNEL_ID, user_id=user.id)
+                        chat_member = await bot.get_chat_member(chat_id=MAIN_CHANNEL_ID, user_id=user.tg_id)
                         logger.info(f"Received ChatMember: {chat_member}")
                         if chat_member and chat_member.status == ChatMemberStatus.MEMBER:
                             await update.approve()
@@ -48,7 +48,7 @@ async def check_access_right(update: types.ChatJoinRequest):
                                                    text="К сожалению, Вы не подписаны на наш канал: https://t.me/yoga_master_mind.\n" +
                                                         "Подпишитесь на наш канал и попробуйте снова.")
                             await update.decline()
-                    except TelegramBadRequest as tbr:
+                    except TelegramBadRequest:
                         logger.error(traceback.format_exc())
                         await bot.send_message(update.user_chat_id,
                                                text="К сожалению, Вы не подписаны на наш канал: https://t.me/yoga_master_mind.\n" +
