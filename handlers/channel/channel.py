@@ -1,5 +1,6 @@
 from aiogram import types
 from aiogram.enums import ChatMemberStatus
+from aiogram.exceptions import TelegramBadRequest
 from aiogram.types import ChatMemberUpdated
 
 from crud import crud_user, crud_practise, crud_invoice
@@ -34,14 +35,19 @@ async def check_access_right(update: types.ChatJoinRequest):
                 else:
                     logger.info("Practise has no commercial lessons, check if chat member...")
                     bot = update.bot
-                    chat_member = await bot.get_chat_member(chat_id=MAIN_CHANNEL_ID, user_id=user.id)
-                    logger.info(f"Received ChatMember: {chat_member}")
-                    if chat_member and chat_member.status == ChatMemberStatus.MEMBER:
-                        await update.approve()
-                    else:
-                        await update.answer(text="К сожалению, Вы не подписаны на наш канал: https://t.me/yoga_master_mind.\n"+
-                                            "Подпишитесь на наш канал и попробуйте снова.")
-                        await update.decline()
+                    try:
+                        chat_member = await bot.get_chat_member(chat_id=MAIN_CHANNEL_ID, user_id=user.id)
+                        logger.info(f"Received ChatMember: {chat_member}")
+                        if chat_member and chat_member.status == ChatMemberStatus.MEMBER:
+                            await update.approve()
+                        else:
+                            await update.answer(text="К сожалению, Вы не подписаны на наш канал: https://t.me/yoga_master_mind.\n"+
+                                                "Подпишитесь на наш канал и попробуйте снова.")
+                            await update.decline()
+                    except TelegramBadRequest:
+                        await update.answer(
+                            text="К сожалению, Вы не подписаны на наш канал: https://t.me/yoga_master_mind.\n" +
+                                 "Подпишитесь на наш канал и попробуйте снова.")
             else:
                 logger.warning("Practise is invalid")
                 await update.decline()
