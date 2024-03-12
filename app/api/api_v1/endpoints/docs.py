@@ -1,12 +1,10 @@
 import os
 from typing import Any
 
-from fastapi import APIRouter, Depends
-from sqlalchemy.ext.asyncio import AsyncSession
+from fastapi import APIRouter
 from starlette.responses import StreamingResponse, FileResponse
 
-from app.api import deps
-from app.core.definitions import MEDIA_ROOT_DIR
+from app.definitions import MEDIA_ROOT_DIR
 
 router = APIRouter()
 
