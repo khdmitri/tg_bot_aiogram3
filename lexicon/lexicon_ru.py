@@ -96,6 +96,7 @@ LEXICON_PRACTISE_CATEGORY: dict[int, str] = {
 }
 
 LEXICON_DEFAULT_NAMES_RU: dict[str, str] = {
+    'practise_content': 'СОДЕРЖАНИЕ ПРАКТИКИ',
     'available_online': '🧘 ДОСТУПНО ONLINE-ЗАНЯТИЙ: ',
     'group_menu_label': 'Что вы хотите сделать дальше?',
     'admin_lessons_list': 'Список доступных уроков:',
