@@ -26,6 +26,7 @@ class Practise(Base):
     poster: Mapped[str] = mapped_column(String, nullable=True)
     about: Mapped[str] = mapped_column(String, nullable=True)
     content: Mapped[str] = mapped_column(String, nullable=True)
+    tag: Mapped[str] = mapped_column(String, nullable=True)
 
     def as_dict(self):
         return {
@@ -41,4 +42,5 @@ class Practise(Base):
             "poster": self.poster,
             "about": self.about,
             "content": self.content,
+            "tag": self.tag,
         }

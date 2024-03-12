@@ -47,6 +47,7 @@ class PractiseBase(BaseModel):
     poster: Optional[str] = None
     about: Optional[str] = None
     content: Optional[str] = None
+    tag: Optional[str] = None
 
 
 class PractiseCreate(PractiseBase):
