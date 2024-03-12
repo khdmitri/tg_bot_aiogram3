@@ -10,6 +10,8 @@ class PractiseMenu(StatesGroup):
     change_media = State()
     view = State()
     change_category = State()
+    change_about = State()
+    change_content = State()
 
 
 class MediaMenu(StatesGroup):

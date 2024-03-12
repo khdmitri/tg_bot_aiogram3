@@ -23,6 +23,9 @@ class Practise(Base):
     file_resource_link: Mapped[str] = mapped_column(String, nullable=True)
     channel_resource_link: Mapped[str] = mapped_column(String, nullable=True)
     channel_chat_id: Mapped[int] = mapped_column(BigInteger, nullable=True)
+    poster: Mapped[str] = mapped_column(String, nullable=True)
+    about: Mapped[str] = mapped_column(String, nullable=True)
+    content: Mapped[str] = mapped_column(String, nullable=True)
 
     def as_dict(self):
         return {
@@ -35,4 +38,7 @@ class Practise(Base):
             "is_published": self.is_published,
             "media_group_id": self.media_group_id,
             "category": self.category,
+            "poster": self.poster,
+            "about": self.about,
+            "content": self.content,
         }

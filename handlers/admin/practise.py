@@ -122,6 +122,20 @@ async def show_practise(message: Message, practise: dict):
         reply_markup=practise_menu_keyboard.get_change_description_keyboard()
     ))
 
+    await log_message.add_message(
+        await message.answer(text=text_decorator.italic(LEXICON_DEFAULT_NAMES_RU['about_practise'])))
+    await log_message.add_message(await message.answer(
+        text=text_decorator.strong(text_decorator.not_empty(practise.get("about", "-"))),
+        reply_markup=practise_menu_keyboard.get_change_about_keyboard()
+    ))
+
+    await log_message.add_message(
+        await message.answer(text=text_decorator.italic(LEXICON_DEFAULT_NAMES_RU['practise_content'])))
+    await log_message.add_message(await message.answer(
+        text=text_decorator.strong(text_decorator.not_empty(practise.get("content", "-"))),
+        reply_markup=practise_menu_keyboard.get_change_content_keyboard()
+    ))
+
     await log_message.add_message(await message.answer(text=text_decorator.italic(LEXICON_DEFAULT_NAMES_RU['media_content'])))
     match practise.get("media_type", MessageTypes.NOT_DEFINED.value):
         case MessageTypes.PHOTO.value:
@@ -226,10 +240,44 @@ async def practise_change_description_prompt(callback: CallbackQuery, state: FSM
     ))))
 
 
+async def practise_change_about_prompt(callback: CallbackQuery, state: FSMContext) -> None:
+    # Изменяем состояние на home
+    await state.set_state(PractiseMenu.change_about)
+
+    text_decorator.strong(text_decorator.italic(await log_message.add_message(await callback.message.answer(
+        text=LEXICON_DEFAULT_NAMES_RU['practise_change_about'],
+        reply_markup=practise_menu_keyboard.get_cancel_change_keyboard()
+    ))))
+
+
+async def practise_change_content_prompt(callback: CallbackQuery, state: FSMContext) -> None:
+    # Изменяем состояние на home
+    await state.set_state(PractiseMenu.change_content)
+
+    text_decorator.strong(text_decorator.italic(await log_message.add_message(await callback.message.answer(
+        text=LEXICON_DEFAULT_NAMES_RU['practise_change_content'],
+        reply_markup=practise_menu_keyboard.get_cancel_change_keyboard()
+    ))))
+
+
 async def practise_change_description_save(message: Message, state: FSMContext) -> None:
     data = await state.get_data()
     practise_dict = data.get("edit_practise", None)
     practise_dict["description"] = message.text
+    await update_practise(practise_dict, message, state)
+
+
+async def practise_change_about_save(message: Message, state: FSMContext) -> None:
+    data = await state.get_data()
+    practise_dict = data.get("edit_practise", None)
+    practise_dict["about"] = message.text
+    await update_practise(practise_dict, message, state)
+
+
+async def practise_change_content_save(message: Message, state: FSMContext) -> None:
+    data = await state.get_data()
+    practise_dict = data.get("edit_practise", None)
+    practise_dict["content"] = message.text
     await update_practise(practise_dict, message, state)
 
 

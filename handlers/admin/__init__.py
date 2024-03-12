@@ -104,6 +104,12 @@ def prepare_router() -> Router:
     admin_router.callback_query.register(practise.practise_change_description_prompt,
                                          F.data.in_({'practise_change_description'}),
                                          StateFilter(PractiseMenu.edit))
+    admin_router.callback_query.register(practise.practise_change_about_prompt,
+                                         F.data.in_({'practise_change_about'}),
+                                         StateFilter(PractiseMenu.edit))
+    admin_router.callback_query.register(practise.practise_change_content_prompt,
+                                         F.data.in_({'practise_change_content'}),
+                                         StateFilter(PractiseMenu.edit))
     admin_router.callback_query.register(media.media_change_description_prompt,
                                          F.data.in_({'media_change_description'}),
                                          StateFilter(MediaMenu.edit))
@@ -124,6 +130,12 @@ def prepare_router() -> Router:
                                          StateFilter(MediaMenu.edit))
     admin_router.message.register(practise.practise_change_description_save,
                                   StateFilter(PractiseMenu.change_description),
+                                  ~F.text.in_({LEXICON_BTN_LABELS_RU['cancel_edit']}))
+    admin_router.message.register(practise.practise_change_about_save,
+                                  StateFilter(PractiseMenu.change_about),
+                                  ~F.text.in_({LEXICON_BTN_LABELS_RU['cancel_edit']}))
+    admin_router.message.register(practise.practise_change_content_save,
+                                  StateFilter(PractiseMenu.change_content),
                                   ~F.text.in_({LEXICON_BTN_LABELS_RU['cancel_edit']}))
     admin_router.message.register(practise.practise_change_category_save,
                                   StateFilter(PractiseMenu.change_category),

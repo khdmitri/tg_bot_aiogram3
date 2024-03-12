@@ -83,6 +83,16 @@ class PractiseMenuKeyboard:
             callback_data='practise_change_description'
         )
 
+        self.change_about_button = InlineKeyboardButton(
+            text=LEXICON_DEFAULT_NAMES_RU['change'],
+            callback_data='practise_change_about'
+        )
+
+        self.change_content_button = InlineKeyboardButton(
+            text=LEXICON_DEFAULT_NAMES_RU['change'],
+            callback_data='practise_change_content'
+        )
+
         self.change_media_button = InlineKeyboardButton(
             text=LEXICON_DEFAULT_NAMES_RU['change'],
             callback_data='practise_change_media'
@@ -125,6 +135,12 @@ class PractiseMenuKeyboard:
 
     def get_change_description_keyboard(self):
         return InlineKeyboardMarkup(inline_keyboard=[[self.change_description_button]])
+
+    def get_change_about_keyboard(self):
+        return InlineKeyboardMarkup(inline_keyboard=[[self.change_about_button]])
+
+    def get_change_content_keyboard(self):
+        return InlineKeyboardMarkup(inline_keyboard=[[self.change_content_button]])
 
     def get_change_media_keyboard(self):
         return InlineKeyboardMarkup(inline_keyboard=[[self.change_media_button]])
