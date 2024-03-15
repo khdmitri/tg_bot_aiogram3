@@ -4,7 +4,7 @@ from typing import Any
 from fastapi import APIRouter
 from starlette.responses import StreamingResponse, FileResponse
 
-from app.definitions import MEDIA_ROOT_DIR
+from app.definitions import MEDIA_ROOT_DIR, ROOT_DIR
 
 router = APIRouter()
 
@@ -24,12 +24,12 @@ def read_file(path, media_type="application/pdf", use_headers=True):
 
 @router.get("/privacy")
 async def get_privacy() -> Any:
-    return read_file("docs/privacy/privacy_en.pdf")
+    return read_file(os.path.join(ROOT_DIR, "docs/privacy/privacy_en.pdf"))
 
 
 @router.get("/eula")
 async def get_privacy() -> Any:
-    return read_file("docs/eula/eula_en.pdf")
+    return read_file(os.path.join(ROOT_DIR, "docs/eula/eula_en.pdf"))
 
 
 @router.get("/get_media/{filename}")
