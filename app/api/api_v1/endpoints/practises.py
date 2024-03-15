@@ -38,7 +38,7 @@ async def read_practises(
     return practises
 
 
-@router.get("/{practise_id}", response_model=schemas.Post)
+@router.get("/{practise_id}", response_model=schemas.Practise)
 async def read_post(
         practise_id: int,
         db: AsyncSession = Depends(deps.get_db_async),
