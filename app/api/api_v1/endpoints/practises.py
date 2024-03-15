@@ -38,6 +38,17 @@ async def read_practises(
     return practises
 
 
+@router.get("/{practise_id}", response_model=schemas.Post)
+async def read_post(
+        practise_id: int,
+        db: AsyncSession = Depends(deps.get_db_async),
+) -> Any:
+    """
+    Get a specific practise by id.
+    """
+    return await crud_practise.get(db, id=practise_id)
+
+
 @router.post("/webapp_data")
 async def webapp_data_action(
         db: AsyncSession = Depends(deps.get_db_async),
