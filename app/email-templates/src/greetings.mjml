@@ -2,7 +2,7 @@
   <mj-body background-color="#fff">
     <mj-section>
       <mj-column>
-        <mj-image href="{{ logo }}" alt="{{ project_name }}" align="center" />
+        <mj-image src="{{ logo }}" alt="{{ project_name }}" align="center" />
         <mj-divider border-color="#555" />
         <mj-text font-size="20px" color="#555" font-family="helvetica"><a href="{{ project_link }}">{{ project_name }}</a></mj-text>
         <mj-text font-size="16px" color="#555">Спасибо, что оставили нам Ваш e-mail. Мы будем отправлять на эту почту только самые важные уведомления.</mj-text>

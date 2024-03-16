@@ -29,6 +29,7 @@ class Settings(BaseSettings):
     LINK_TG_CHANNEL: str
     LINK_TG_BOT: str
     LINK_TG_GROUP: str
+    LINK_SITE: str = "https://yogamindmaster.ru/"
     API_V1_STR: str = "/api/v2"
     SECRET_KEY: str = secrets.token_urlsafe(32)
     # 60 minutes * 24 hours * 8 days = 8 days

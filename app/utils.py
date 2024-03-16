@@ -43,6 +43,7 @@ def send_greeting_email(email_to: str) -> None:
     link_tg_group = settings.LINK_TG_GROUP
     link_tg_bot = settings.LINK_TG_BOT
     logo = "https://postmasterhub.store/api/v2/document/get_logo/"
+    link_site = settings.LINK_SITE
     subject = f"{project_name} - Мы получили ваш e-mail"
     with open(os.path.join(ROOT_DIR, settings.EMAIL_TEMPLATES_DIR, "greetings.html")) as f:
         template_str = f.read()
@@ -58,5 +59,6 @@ def send_greeting_email(email_to: str) -> None:
             "link_tg_group": link_tg_group,
             "link_tg_bot": link_tg_bot,
             "logo": logo,
+            "link_site": link_site,
         },
     )
