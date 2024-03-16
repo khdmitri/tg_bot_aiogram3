@@ -14,6 +14,21 @@ load_dotenv()
 
 class Settings(BaseSettings):
     PROJECT_NAME: str
+    PROJECT_LINK: str
+    PROJECT_LOGO_URL: str
+    SMTP_TLS: bool
+    EMAIL_TEMPLATES_DIR: str = "./email-templates/build"
+    EMAILS_ENABLED: bool = True
+    SMTP_PORT: int
+    SMTP_HOST: str
+    SMTP_USER: str
+    SMTP_PASSWORD: str
+    EMAILS_FROM_EMAIL: str
+    EMAILS_FROM_NAME: str
+    LINK_TG_APP: str
+    LINK_TG_CHANNEL: str
+    LINK_TG_BOT: str
+    LINK_TG_GROUP: str
     API_V1_STR: str = "/api/v2"
     SECRET_KEY: str = secrets.token_urlsafe(32)
     # 60 minutes * 24 hours * 8 days = 8 days

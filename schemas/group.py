@@ -1,9 +1,3 @@
-
-# id: Mapped[int] = mapped_column(BigInteger, primary_key=True, index=True, unique=True)
-# user_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
-# user = relationship("User", lazy="selectin")
-# media_id = mapped_column(ForeignKey("media.id", ondelete='SET NULL'))
-# media = relationship("Media", lazy="selectin")
 from models.base import BaseModel
 
 

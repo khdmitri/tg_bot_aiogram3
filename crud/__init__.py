@@ -5,3 +5,4 @@ from .crud_invoice import crud_invoice
 from .crud_post import crud_post
 from .crud_media_group import crud_media_group
 from .crud_group import crud_group
+from .crud_web_user import crud_web_user

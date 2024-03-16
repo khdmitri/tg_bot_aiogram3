@@ -6,4 +6,6 @@ from .practise import Practise, PractiseCreate, PractiseUpdate, PractisePaidRequ
 from .user import User, UserCreate, UserUpdate, UserByTgId, UserGroupMember
 from .user_payment import UserPayment, UserPaymentCreate, UserPaymentUpdate
 from .group import Group, GroupCreate, GroupUpdate
-from .webappdata import WebAppData
+from .webappdata import WebAppData, WebEmailData
+from .web_user import WebUser, WebUserCreate, WebUserUpdate
+from .msg import Msg

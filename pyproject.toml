@@ -26,6 +26,7 @@ pyqiwi = "^0.2.0"
 pytz = "^2023.3.post1"
 uvicorn = {extras = ["standard"], version = "^0.27.1"}
 fastapi = "^0.109.2"
+emails = "^0.6"
 
 
 [build-system]

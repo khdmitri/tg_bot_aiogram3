@@ -7,3 +7,4 @@ from models.practise import Practise # noqa
 from models.post import Post # noqa
 from models.media_group import MediaGroup # noqa
 from models.group import Group # Noqa
+from models.web_user import WebUser # Noqa
