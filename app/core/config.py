@@ -17,7 +17,7 @@ class Settings(BaseSettings):
     PROJECT_LINK: str
     PROJECT_LOGO_URL: str
     SMTP_TLS: bool
-    EMAIL_TEMPLATES_DIR: str = "./email-templates/build"
+    EMAIL_TEMPLATES_DIR: str = "email-templates/build"
     EMAILS_ENABLED: bool = True
     SMTP_PORT: int
     SMTP_HOST: str

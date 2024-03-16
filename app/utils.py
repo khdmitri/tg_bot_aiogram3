@@ -1,3 +1,4 @@
+import os.path
 from pathlib import Path
 from typing import Dict, Any
 
@@ -5,6 +6,7 @@ import emails
 from emails.template import JinjaTemplate
 
 from app.core.config import settings
+from app.definitions import ROOT_DIR
 from utils.logger import get_logger
 
 logger = get_logger()
@@ -41,7 +43,7 @@ def send_greeting_email(email_to: str) -> None:
     link_tg_group = settings.LINK_TG_GROUP
     link_tg_bot = settings.LINK_TG_BOT
     subject = f"{project_name} - Мы получили ваш e-mail"
-    with open(Path(settings.EMAIL_TEMPLATES_DIR) / "greetings.html") as f:
+    with open(os.path.join(ROOT_DIR, settings.EMAIL_TEMPLATES_DIR, "greetings.html")) as f:
         template_str = f.read()
     send_email(
         email_to=email_to,
