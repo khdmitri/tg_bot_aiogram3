@@ -13,7 +13,7 @@ def read_file(path, media_type="application/pdf", use_headers=True):
     f = open(path, "rb")
 
     # To view the file in the browser, use "inline" for the media_type
-    headers = {"Content-Disposition": "inline; filename=privacy_en.pdf"}
+    headers = {"Content-Disposition": "inline; filename=privacy_ru.pdf"}
 
     # Create a StreamingResponse object with the file-like object, media type and headers
     if use_headers:
@@ -24,12 +24,12 @@ def read_file(path, media_type="application/pdf", use_headers=True):
 
 @router.get("/privacy")
 async def get_privacy() -> Any:
-    return read_file(os.path.join(ROOT_DIR, "docs/privacy/privacy_en.pdf"))
+    return read_file(os.path.join(ROOT_DIR, "docs/privacy/privacy_ru.pdf"))
 
 
 @router.get("/eula")
 async def get_privacy() -> Any:
-    return read_file(os.path.join(ROOT_DIR, "docs/eula/eula_en.pdf"))
+    return read_file(os.path.join(ROOT_DIR, "docs/eula/eula_ru.pdf"))
 
 
 @router.get("/get_media/{filename}")
