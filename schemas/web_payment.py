@@ -15,11 +15,11 @@ class WebPaymentBase(BaseModel):
 
 
 class WebPaymentCreate(WebPaymentBase):
-    payment_id: int
+    payment_id: str
 
 
 class WebPaymentUpdate(WebPaymentBase):
-    payment_id: int
+    payment_id: str
 
 
 class WebPaymentInDBBase(WebPaymentUpdate):
