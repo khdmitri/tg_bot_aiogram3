@@ -34,6 +34,7 @@ class PractiseBase(BaseModel):
     file_resource_link: Optional[str] = None
     disk_resource_link: Optional[str] = None
     channel_resource_link: Optional[str] = None
+    channel_web_link: Optional[str] = None
     channel_chat_id: Optional[int] = None
     poster: Optional[str] = None
     about: Optional[str] = None

@@ -13,3 +13,12 @@ class WebActions(Enum):
     SUBSCRIBE = 1
     PROMOTION = 2
     PAID = 3
+
+
+UkassaPaymentStatus = {
+    'pending': 1,
+    'succeeded': 2,
+    'waiting_for_capture': 3,
+    'canceled': 4,
+}
+

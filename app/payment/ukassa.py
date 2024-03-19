@@ -1,8 +1,9 @@
 import uuid
 
-from yookassa import Payment
+from yookassa import Payment, Configuration
 
 from app.core.config import settings
+from app.global_const import UkassaPaymentStatus
 from crud import crud_web_user, crud_web_payment, crud_practise
 from db.session import SessionLocalAsync
 from models.web_payment import WebPayment
@@ -11,6 +12,9 @@ from schemas.web_payment import WebPaymentCreate
 from utils.logger import get_logger
 
 logger = get_logger()
+
+Configuration.account_id = settings.UKASSA_SHOPID
+Configuration.secret_key = settings.UKASSA_SECRET_KEY
 
 
 class UkassaPayment:
@@ -58,7 +62,8 @@ class UkassaPayment:
                             "type": "redirect",
                             "return_url": settings.RETURN_URL
                         },
-                        "description": f"Оплата за курс: {practise.title}"
+                        "description": f"Оплата за курс: {practise.title}",
+                        "capture": True,
                     }, idempotence_key)
 
                     return payment
@@ -70,3 +75,21 @@ class UkassaPayment:
             logger.warning("WebUser is None")
 
         return None
+
+    @staticmethod
+    async def find_one(payment_id):
+        async with SessionLocalAsync() as db:
+            payment_db = await crud_web_payment.get(db, id=payment_id)
+            if payment_db:
+                payment = Payment.find_one(payment_id)
+                if payment.status in UkassaPaymentStatus.keys():
+                    payment_db.status = UkassaPaymentStatus[payment.status]
+                    db.add(payment_db)
+                    await db.commit()
+                    await db.refresh(payment_db)
+                    return payment_db
+                else:
+                    logger.error(f"Payment status not recognized: {payment.status}")
+                    return None
+            else:
+                logger.error(f"Payment not found: {payment_id}")

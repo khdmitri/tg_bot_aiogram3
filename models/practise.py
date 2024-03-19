@@ -23,6 +23,7 @@ class Practise(Base):
     file_resource_link: Mapped[str] = mapped_column(String, nullable=True)
     disk_resource_link: Mapped[str] = mapped_column(String, nullable=True)
     channel_resource_link: Mapped[str] = mapped_column(String, nullable=True)
+    channel_web_link: Mapped[str] = mapped_column(String, nullable=True)
     channel_chat_id: Mapped[int] = mapped_column(BigInteger, nullable=True)
     poster: Mapped[str] = mapped_column(String, nullable=True)
     about: Mapped[str] = mapped_column(String, nullable=True)

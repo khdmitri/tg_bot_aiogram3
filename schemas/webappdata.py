@@ -15,4 +15,3 @@ class WebEmailData(BaseModel):
 class WebCreatePaymentData(BaseModel):
     email: EmailStr
     practise_id: int
-    amount: int
