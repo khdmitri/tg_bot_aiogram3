@@ -15,3 +15,8 @@ class WebEmailData(BaseModel):
 class WebCreatePaymentData(BaseModel):
     email: EmailStr
     practise_id: int
+
+
+class UkassaPaymentSchema(BaseModel):
+    payment_id: str
+    confirmation_url: str

@@ -1,5 +1,7 @@
+import traceback
 import uuid
 
+from requests import HTTPError
 from yookassa import Payment, Configuration
 
 from app.core.config import settings
@@ -9,6 +11,7 @@ from db.session import SessionLocalAsync
 from models.web_payment import WebPayment
 from models.web_user import WebUser
 from schemas.web_payment import WebPaymentCreate
+from schemas.webappdata import UkassaPaymentSchema
 from utils.logger import get_logger
 
 logger = get_logger()
@@ -28,10 +31,10 @@ class UkassaPayment:
 
         return web_user
 
-    async def _create_web_payment_in_db(self, web_user_id: int, amount: int) -> WebPayment:
+    async def _create_web_payment_in_db(self, payment_id: str, web_user_id: int, amount: int) -> WebPayment:
         async with SessionLocalAsync() as db:
             web_payment_schema = WebPaymentCreate(
-                payment_id=str(uuid.uuid4()),
+                payment_id=payment_id,
                 web_user_id=web_user_id,
                 practise_id=self.practise_id,
                 amount=amount
@@ -47,12 +50,11 @@ class UkassaPayment:
         if web_user:
             practise = await self._get_practise()
             if practise:
-                web_payment_db: WebPayment = await self._create_web_payment_in_db(web_user.id, amount)
-                if web_payment_db:
-                    idempotence_key = str(web_payment_db.payment_id)
+                idempotence_key = str(uuid.uuid4())
+                try:
                     payment = Payment.create({
                         "amount": {
-                            "value": str(web_payment_db.amount) + ".00",
+                            "value": str(amount) + ".00",
                             "currency": "RUB"
                         },
                         # "payment_method_data": {
@@ -66,9 +68,15 @@ class UkassaPayment:
                         "capture": True,
                     }, idempotence_key)
 
-                    return payment
-                else:
-                    logger.warning("WebPaymentDb is None")
+                    if payment:
+                        web_payment_db: WebPayment = await self._create_web_payment_in_db(payment.id, web_user.id, amount)
+                        if web_payment_db:
+                            return UkassaPaymentSchema(payment_id=payment.id,
+                                                       confimation_url=payment.confirmation.confirmation_url)
+                        else:
+                            logger.warning("WebPaymentDb is None")
+                except HTTPError:
+                    logger.error(traceback.format_exc())
             else:
                 logger.warning("Practise not found")
         else:
