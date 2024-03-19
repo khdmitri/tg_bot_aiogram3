@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 import schemas
 from app.api import deps
 from app.global_const import WebActions
-from app.utils import send_greeting_email, send_promotion_email
+from app.utils_module import send_greeting_email, send_promotion_email
 from crud import crud_web_user
 from schemas import WebUserCreate
 from utils.constants import WEBAPP_ACTIONS
