@@ -26,7 +26,7 @@ async def create_payment(
     return payment
 
 
-@router.get("/find_one/{order_id}")
+@router.get("/find_one/{order_id}", response_model=WebPayment)
 async def find_one(
     order_id: str
 ) -> WebPayment:

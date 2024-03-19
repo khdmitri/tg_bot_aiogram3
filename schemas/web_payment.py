@@ -12,6 +12,7 @@ class WebPaymentBase(BaseModel):
     web_user_id: int
     practise_id: int
     amount: Optional[int] = 0
+    status: Optional[int] = 0
 
 
 class WebPaymentCreate(WebPaymentBase):
