@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 
 
 class WebAppData(BaseModel):
@@ -10,3 +10,9 @@ class WebAppData(BaseModel):
 class WebEmailData(BaseModel):
     action: int
     email: str
+
+
+class WebCreatePaymentData(BaseModel):
+    email: EmailStr
+    practise_id: int
+    amount: int

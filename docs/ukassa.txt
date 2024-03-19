@@ -1,0 +1,4 @@
+ukassa secret key:
+test_k2UAI5ybUxx-3nGM9HU6oJxpAt43obw6zNXxrxW5QQQ
+shopId
+306649

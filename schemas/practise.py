@@ -1,15 +1,5 @@
 from typing import Optional, List
-
 from pydantic import BaseModel
-
-# id = Column(BigInteger, primary_key=True, index=True, unique=True)
-# order = Column(SmallInteger)
-# title = Column(String(128))
-# description = Column(String)
-# media_file_id = Column(String)
-# media_type = Column(String(32))
-# medias = relationship("Media", back_populates="practise", lazy="selectin")
-# thumbs = Column(String, unique=True)
 from schemas import MediaBase
 
 

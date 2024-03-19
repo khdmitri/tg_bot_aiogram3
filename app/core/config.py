@@ -31,6 +31,7 @@ class Settings(BaseSettings):
     LINK_TG_GROUP: str
     LINK_SITE: str = "https://yogamindmaster.ru/"
     PROMOTION_LINK: str = "https://www.youtube.com/watch?v=nGEIOD5ptN8"
+    RETURN_URL: str = "https://yogamindmaster.ru/payment/return"
     API_V1_STR: str = "/api/v2"
     SECRET_KEY: str = secrets.token_urlsafe(32)
     # 60 minutes * 24 hours * 8 days = 8 days

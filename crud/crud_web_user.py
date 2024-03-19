@@ -13,5 +13,14 @@ class CRUDWebUser(CRUDBase[WebUser, WebUserCreate, WebUserUpdate]):
         result = await db.execute(select(self.model).filter(self.model.email == email))
         return result.scalars().first()
 
+    async def get_by_email_or_create(self, db: AsyncSession, email: str) -> Optional[WebUser]:
+        web_user = await self.get_by_email(db, email)
+        if web_user:
+            return web_user
+        else:
+            new_web_user = WebUserCreate(email=email)
+            web_user = await crud_web_user.create(db, obj_in=new_web_user)
+            return web_user
+
 
 crud_web_user = CRUDWebUser(WebUser)
