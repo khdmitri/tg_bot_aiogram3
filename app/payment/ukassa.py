@@ -75,7 +75,7 @@ class UkassaPayment:
                         web_payment_db: WebPayment = await self._create_web_payment_in_db(payment.id, web_user.id, amount)
                         if web_payment_db:
                             return UkassaPaymentSchema(payment_id=payment.id,
-                                                       confimation_url=payment.confirmation.confirmation_url)
+                                                       confirmation_url=payment.confirmation.confirmation_url)
                         else:
                             logger.warning("WebPaymentDb is None")
                 except HTTPError:
