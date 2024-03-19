@@ -69,6 +69,9 @@ class UkassaPayment:
                     }, idempotence_key)
 
                     if payment:
+                        logger.info(f"payment: {payment}")
+                        logger.info(f"URL {payment.confirmation}")
+                        logger.info(f"URL {payment.confirmation.confirmation_url}")
                         web_payment_db: WebPayment = await self._create_web_payment_in_db(payment.id, web_user.id, amount)
                         if web_payment_db:
                             return UkassaPaymentSchema(payment_id=payment.id,
