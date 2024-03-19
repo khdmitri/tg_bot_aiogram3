@@ -34,7 +34,7 @@ class Settings(BaseSettings):
     RETURN_URL: str = "https://yogamindmaster.ru/payment/return"
     UKASSA_SHOPID: int = 306649
     UKASSA_SECRET_KEY: str = "test_k2UAI5ybUxx-3nGM9HU6oJxpAt43obw6zNXxrxW5QQQ"
-    PRACTISE_DISCOUNT = 20
+    PRACTISE_DISCOUNT: int = 20
     API_V1_STR: str = "/api/v2"
     SECRET_KEY: str = secrets.token_urlsafe(32)
     # 60 minutes * 24 hours * 8 days = 8 days
