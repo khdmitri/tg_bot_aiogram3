@@ -2,3 +2,10 @@ ukassa secret key:
 test_k2UAI5ybUxx-3nGM9HU6oJxpAt43obw6zNXxrxW5QQQ
 shopId
 306649
+
+================
+https://postmasterhub.store
+secret
+test_0XSD6reTI3apc3ZD4RcSHfomnrzbrxBWSlPfnpSm4lE
+shopId
+352423
