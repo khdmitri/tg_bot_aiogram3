@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING
 
-from sqlalchemy import BigInteger, ForeignKey, Integer, DateTime, func
+from sqlalchemy import BigInteger, ForeignKey, Integer, DateTime, func, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from db.base_class import Base
@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 
 
 class WebPayment(Base):
-    payment_id: Mapped[str] = mapped_column(BigInteger, primary_key=True, index=True, unique=True)
+    payment_id: Mapped[str] = mapped_column(String, primary_key=True, index=True, unique=True)
     web_user_id: Mapped[int] = mapped_column(ForeignKey("webuser.id"))
     web_user = relationship("WebUser", lazy="selectin")
     status: Mapped[int] = mapped_column(Integer, default=0)
