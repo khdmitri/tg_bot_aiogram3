@@ -20,7 +20,7 @@ async def create_payment(
         data: schemas.WebCreatePaymentData
 ) -> Any:
     payment_ukassa = UkassaPayment(email=data.email, practise_id=data.practise_id)
-    _, price = get_practise_price(practise_id=data.practise_id)
+    _, price = await get_practise_price(practise_id=data.practise_id)
     payment = await payment_ukassa.create_payment(price)
     return payment
 
