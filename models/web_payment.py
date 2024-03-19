@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 
 class WebPayment(Base):
     payment_id: Mapped[str] = mapped_column(BigInteger, primary_key=True, index=True, unique=True)
-    web_user_id: Mapped[int] = mapped_column(ForeignKey("web_user.id"))
+    web_user_id: Mapped[int] = mapped_column(ForeignKey("webuser.id"))
     web_user = relationship("WebUser", lazy="selectin")
     status: Mapped[int] = mapped_column(Integer, default=0)
     practise_id: Mapped[int] = mapped_column(ForeignKey("practise.id"))
