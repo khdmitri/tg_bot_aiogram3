@@ -31,7 +31,7 @@ class UkassaPayment:
     async def _create_web_payment_in_db(self, web_user_id: int, amount: int) -> WebPayment:
         async with SessionLocalAsync() as db:
             web_payment_schema = WebPaymentCreate(
-                payment_id=uuid.uuid4(),
+                payment_id=str(uuid.uuid4()),
                 web_user_id=web_user_id,
                 practise_id=self.practise_id,
                 amount=amount
