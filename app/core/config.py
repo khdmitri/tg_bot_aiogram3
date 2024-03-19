@@ -32,7 +32,7 @@ class Settings(BaseSettings):
     LINK_SITE: str = "https://yogamindmaster.ru/"
     PROMOTION_LINK: str = "https://www.youtube.com/watch?v=nGEIOD5ptN8"
     RETURN_URL: str = "https://yogamindmaster.ru/payment/return"
-    UKASSA_SHOPID: str = "306649"
+    UKASSA_SHOPID: int = 353404
     UKASSA_SECRET_KEY: str = "test_k2UAI5ybUxx-3nGM9HU6oJxpAt43obw6zNXxrxW5QQQ"
     PRACTISE_DISCOUNT: int = 20
     API_V1_STR: str = "/api/v2"
