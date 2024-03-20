@@ -1,0 +1,28 @@
+<mjml>
+  <mj-body background-color="#fff">
+    <mj-section>
+      <mj-column>
+        <mj-image src="{{ logo }}" alt="{{ project_name }}" align="center" />
+        <mj-divider border-color="#555" />
+        <mj-text font-size="20px" color="#555" font-family="helvetica"><a href="{{ project_link }}">{{ project_name }}</a></mj-text>
+        <mj-text font-size="16px" color="#555">Ваша оплата успешно подтверждена!</mj-text>
+        <mj-text font-size="14px" color="#555">Теперь Вы можете присоединиться к закрытому Telegram-каналу, где собран весь курс в нужной последовательности.</mj-text>
+        <mj-text font-size="14px" color="#555">Мы постоянно улучшаем контент курса и содержимое канала обновляется.</mj-text>
+        <mj-text font-size="14px" color="#555">Если Вы не используете Telegram, не спешите расстраиваться. Вы можете скачать весь курс в обычном формате с нашего диска.</mj-text>
+        <mj-text font-size="22px" color="#555"><a href="{{ telegram_link }}"></a>ВАША ССЫЛКА НА ЗАКРЫТЫЙ КАНАЛ</mj-text>
+        <mj-text font-size="22px" color="#555"><a href="{{ disk_link }}"></a>ВАША ССЫЛКА НА ЯНДЕКС-ДИСК</mj-text>
+        <mj-text font-size="16px" color="#555">Спасибо, что выбрали нас!</mj-text>
+        <mj-divider border-color="#555" border-width="2px" />
+<!--        <mj-button padding="50px 0px" href="{{ link }}">Reset Password</mj-button>-->
+<!--        <mj-text font-size="16px" color="#555">Or open the following link:</mj-text>-->
+        <mj-text font-size="16px" color="#555"><a href="{{ link_tg_app }}">Telegram-приложение</a>: здесь можно посмотреть все курсы, записаться на online-уроки</mj-text>
+        <mj-text font-size="16px" color="#555"><a href="{{ link_tg_channel }}">Telegram-канал</a>: это наш официальный telegram-канал. Для тех, кто подпишется, есть подарок</mj-text>
+        <mj-text font-size="16px" color="#555"><a href="{{ link_tg_bot }}">Telegram-бот</a>: наш telegram-бот. Здесь нам можно писать, смотреть уроки, записаться на online-занятия</mj-text>
+        <mj-text font-size="16px" color="#555"><a href="{{ link_tg_group }}">Telegram-группа</a>: это наша публичная telegram-группа. Здесь можно писать, задавать вопросы</mj-text>
+        <mj-divider border-color="#555" border-width="2px" />
+        <mj-text font-size="12px" color="#555" font-family="helvetica"><a href="{{ project_link }}">Авторские курсы Марины Киселевой</a></mj-text>
+        <mj-text font-size="12px" color="#555">🧘 Йога - не просто уроки - это путешествие к себе 🧘</mj-text>
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>

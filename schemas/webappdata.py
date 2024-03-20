@@ -20,3 +20,9 @@ class WebCreatePaymentData(BaseModel):
 class UkassaPaymentSchema(BaseModel):
     payment_id: str
     confirmation_url: str
+
+
+class UkassaEventSchema(BaseModel):
+    id: str
+    amount: int
+    status: int
