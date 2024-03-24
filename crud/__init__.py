@@ -7,3 +7,6 @@ from .crud_media_group import crud_media_group
 from .crud_group import crud_group
 from .crud_web_user import crud_web_user
 from .crud_web_payment import crud_web_payment
+from .crud_sphere import crud_sphere
+from .crud_sphere_user import crud_sphere_user
+from .crud_depth import crud_depth

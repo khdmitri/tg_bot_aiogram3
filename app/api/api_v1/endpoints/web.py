@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, List
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -7,8 +7,9 @@ import schemas
 from app.api import deps
 from app.global_const import WebActions
 from app.utils_module import send_greeting_email, send_promotion_email
+from core.sphere_config import SphereConfig
 from crud import crud_web_user
-from schemas import WebUserCreate
+from schemas import WebUserCreate, SphereWebUser
 from utils.constants import WEBAPP_ACTIONS
 from utils.logger import get_logger
 
@@ -44,3 +45,12 @@ async def process_email(
             send_promotion_email(data.email)
 
     return {"msg": "User was processed successfully"}
+
+
+@router.post("/prepare_practise", response_model=List[Any])
+async def process_email(
+        data: List[SphereWebUser]
+) -> Any:
+    sphere_config = SphereConfig(web_user_id=None, sphere_list=data)
+
+    return sphere_config.prepare_practise()

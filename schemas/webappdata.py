@@ -1,3 +1,5 @@
+from typing import Optional
+
 from pydantic import BaseModel, EmailStr
 
 
@@ -26,3 +28,9 @@ class UkassaEventSchema(BaseModel):
     id: str
     amount: int
     status: int
+
+
+class SphereWebUser(BaseModel):
+    id: int
+    depth: int
+    email: Optional[str]

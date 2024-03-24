@@ -8,4 +8,5 @@ from models.post import Post # noqa
 from models.media_group import MediaGroup # noqa
 from models.group import Group # Noqa
 from models.web_user import WebUser # Noqa
-from models.web_payment import WebPayment #Noqa
+from models.web_payment import WebPayment # noqa
+from models.sphere import Sphere, SphereUser, Depth # noqa

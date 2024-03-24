@@ -10,3 +10,4 @@ class WebUser(Base):
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True, index=True, unique=True)
     email: Mapped[str] = mapped_column(String, unique=True)
     create_date: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
+    sphere_update: Mapped[datetime] = mapped_column(DateTime, nullable=True)
