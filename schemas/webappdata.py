@@ -33,4 +33,3 @@ class UkassaEventSchema(BaseModel):
 class SphereWebUser(BaseModel):
     id: int
     depth: int
-    email: Optional[str]

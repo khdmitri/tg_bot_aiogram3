@@ -48,7 +48,7 @@ async def process_email(
 
 
 @router.post("/prepare_practise", response_model=List[Any])
-async def process_email(
+async def prepare_practise(
         data: List[SphereWebUser]
 ) -> Any:
     sphere_config = SphereConfig(web_user_id=None, sphere_list=data)
