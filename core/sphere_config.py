@@ -60,7 +60,7 @@ class SphereConfig:
                 compare_results = []
                 for ind, old_item in enumerate(old_practise):
                     try:
-                        diff = int(new_practise[ind].depth - old_item.depth)
+                        diff = int(new_practise[ind].order - old_item.order)
                         compare_results.append(
                             [spheres[old_item.sphere_id-1].title, old_item.order, new_practise[ind].order, diff]
                         )
