@@ -7,13 +7,13 @@ from schemas import SphereWebUser
 
 def get_level(value: int):
     if value <= 25:
-        return 1
-    elif value <=50:
-        return 2
-    elif value <=75:
-        return 3
-    else:
         return 4
+    elif value <=50:
+        return 3
+    elif value <=75:
+        return 2
+    else:
+        return 1
 
 
 class SphereConfig:
