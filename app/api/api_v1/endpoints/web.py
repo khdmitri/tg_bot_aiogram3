@@ -47,10 +47,10 @@ async def process_email(
     return {"msg": "User was processed successfully"}
 
 
-@router.post("/prepare_practise", response_model=List[Any])
+@router.post("/prepare_practise")
 async def prepare_practise(
         data: List[SphereWebUser]
 ) -> Any:
     sphere_config = SphereConfig(web_user_id=None, sphere_list=data)
 
-    return sphere_config.prepare_practise()
+    return await sphere_config.prepare_practise()
