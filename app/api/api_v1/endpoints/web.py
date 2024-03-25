@@ -72,7 +72,7 @@ async def send_practise(
         send_program_email(email_to=data.email, table_values=table_values)
         diff = await sphere_config.update_practise()
         if diff:
-            send_program_analysis_email(email_to=data.email, table_values=table_values)
+            send_program_analysis_email(email_to=data.email, table_values=diff)
     else:
         raise HTTPException(
             status_code=404,
