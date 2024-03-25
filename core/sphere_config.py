@@ -62,7 +62,7 @@ class SphereConfig:
                     try:
                         diff = int(new_practise[ind].depth - old_item.depth)
                         compare_results.append(
-                            [spheres[old_item.sphere_id-1].title, old_item.depth, new_practise[ind].depth, diff]
+                            [spheres[old_item.sphere_id-1].title, old_item.order, new_practise[ind].order, diff]
                         )
                     except Exception:
                         logger.error(traceback.format_exc())
