@@ -28,11 +28,12 @@ class SphereConfig:
             for sphere in self.sphere_list:
                 sphere_db = await crud_sphere.get(db, id=sphere.id)
                 if sphere_db:
-                    for lvl in range(0, sphere.depth):
+                    for lvl in range(0, get_level(sphere.depth)):
                         depth_db = await crud_depth.get(db, id=lvl+1)
-                        practise.append({
-                            "meditation": sphere_db.as_dict(),
-                            "practise": depth_db.as_dict()
-                        })
+                        if depth_db:
+                            practise.append({
+                                "meditation": sphere_db.as_dict(),
+                                "practise": depth_db.as_dict()
+                            })
 
         return practise
