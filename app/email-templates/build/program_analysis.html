@@ -36,10 +36,10 @@
             <td style="padding: 0 15px 0 0; text-align: center"><i>{{ r[1] }}</i></td>
             <td style="padding: 0 15px 0 0; text-align: center"><i>{{ r[2] }}</i></td>
             {% if r[3] >= 0  %}
-            <td style="padding: 0 15px 0 0; text-align: center; color: green;"><b>➚ +{{ r[1] }}%</b></td>
+            <td style="padding: 0 15px 0 0; text-align: center; color: green;"><b>➚ +{{ r[3] }}%</b></td>
             {% endif %}
             {% if r[3] < 0  %}
-            <td style="padding: 0 15px 0 0; text-align: center; color: red;"><b>➘ {{ r[1] }}%</b></td>
+            <td style="padding: 0 15px 0 0; text-align: center; color: red;"><b>➘ {{ r[3] }}%</b></td>
             {% endif %}
         </tr>
         {% endfor %}
