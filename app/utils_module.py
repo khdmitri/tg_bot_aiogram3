@@ -197,7 +197,6 @@ def get_program_table_values(program: list):
         item_list.append(item["practise"]["duration"])
         result.append(item_list)
         item_list = []
-        day_counter += 1
         item_list.append(day_counter)
         item_list.append("МЕДИТАЦИЯ")
         item_list.append(item["meditation"]["title"])
