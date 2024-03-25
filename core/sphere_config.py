@@ -18,7 +18,8 @@ def get_level(value: int):
 
 class SphereConfig:
     def __init__(self, web_user_id: Union[int | None], sphere_list: List[SphereWebUser]):
-        self.sphere_list = sphere_list.sort(key=lambda x: x.depth)
+        sphere_list.sort(key=lambda x: x.depth)
+        self.sphere_list = sphere_list
         self.web_user_id = web_user_id
 
     async def prepare_practise(self):
