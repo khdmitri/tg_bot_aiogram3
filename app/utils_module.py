@@ -123,3 +123,87 @@ def send_paid_email(email_to: str, telegram_link: str, disk_link) -> None:
             "disk_link": disk_link,
         },
     )
+
+
+def send_program_email(email_to: str, table_values: list) -> None:
+    project_name = settings.PROJECT_NAME
+    project_link = settings.PROJECT_LINK
+    link_tg_app = settings.LINK_TG_APP
+    link_tg_channel = settings.LINK_TG_CHANNEL
+    link_tg_group = settings.LINK_TG_GROUP
+    link_tg_bot = settings.LINK_TG_BOT
+    logo = "https://postmasterhub.store/api/v2/document/get_logo/"
+    link_site = settings.LINK_SITE
+    subject = f"{project_name} - Индивидуальная программа занятий"
+    with open(os.path.join(ROOT_DIR, settings.EMAIL_TEMPLATES_DIR, "program.html")) as f:
+        template_str = f.read()
+    send_email(
+        email_to=email_to,
+        subject_template=subject,
+        html_template=template_str,
+        environment={
+            "project_name": project_name,
+            "project_link": project_link,
+            "link_tg_app": link_tg_app,
+            "link_tg_channel": link_tg_channel,
+            "link_tg_group": link_tg_group,
+            "link_tg_bot": link_tg_bot,
+            "logo": logo,
+            "link_site": link_site,
+            "tableRangeValues": table_values
+        },
+    )
+
+
+def send_program_analysis_email(email_to: str, table_values: list) -> None:
+    project_name = settings.PROJECT_NAME
+    project_link = settings.PROJECT_LINK
+    link_tg_app = settings.LINK_TG_APP
+    link_tg_channel = settings.LINK_TG_CHANNEL
+    link_tg_group = settings.LINK_TG_GROUP
+    link_tg_bot = settings.LINK_TG_BOT
+    logo = "https://postmasterhub.store/api/v2/document/get_logo/"
+    link_site = settings.LINK_SITE
+    subject = f"{project_name} - Прогресс Вашего состояния"
+    with open(os.path.join(ROOT_DIR, settings.EMAIL_TEMPLATES_DIR, "program_analysis.html")) as f:
+        template_str = f.read()
+    send_email(
+        email_to=email_to,
+        subject_template=subject,
+        html_template=template_str,
+        environment={
+            "project_name": project_name,
+            "project_link": project_link,
+            "link_tg_app": link_tg_app,
+            "link_tg_channel": link_tg_channel,
+            "link_tg_group": link_tg_group,
+            "link_tg_bot": link_tg_bot,
+            "logo": logo,
+            "link_site": link_site,
+            "tableRangeValues": table_values
+        },
+    )
+
+
+def get_program_table_values(program: list):
+    result = []
+    day_counter = 1
+    for item in program:
+        item_list = []
+        item_list.append(day_counter)
+        item_list.append("ПРАКТИКА")
+        item_list.append(item["practise"]["title"])
+        item_list.append(item["practise"]["best_time"])
+        item_list.append(item["practise"]["duration"])
+        result.append(item_list)
+        item_list = []
+        day_counter += 1
+        item_list.append(day_counter)
+        item_list.append("МЕДИТАЦИЯ")
+        item_list.append(item["meditation"]["title"])
+        item_list.append(item["meditation"]["best_time"])
+        item_list.append(item["meditation"]["duration"])
+        result.append(item_list)
+        day_counter += 1
+
+    return result

@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, List
 
 from pydantic import BaseModel, EmailStr
 
@@ -33,3 +33,8 @@ class UkassaEventSchema(BaseModel):
 class SphereWebUser(BaseModel):
     id: int
     depth: int
+
+
+class SphereWebUserEmail(BaseModel):
+    email: EmailStr
+    sphere_list: List[SphereWebUser]
