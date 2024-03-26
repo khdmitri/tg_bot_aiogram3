@@ -9,12 +9,13 @@ async def get_practise_price(practise_id: int, discount=settings.PRACTISE_DISCOU
     async with SessionLocalAsync() as db:
         practise = await crud_practise.get(db, id=practise_id)
         if practise:
-            full_total, total = 0, 0
-            for media in practise.medias:
-                if media.cost > 0:
-                    full_total += media.cost
+            total = practise.cost
+            full_total = total * (100 + discount) / 100
+            # for media in practise.medias:
+            #     if media.cost > 0:
+            #         full_total += media.cost
 
-            total = full_total * (100 - discount) / 100
+            # total = full_total * (100 - discount) / 100
 
             return int(full_total), int(total)
 
