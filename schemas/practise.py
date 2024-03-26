@@ -40,6 +40,7 @@ class PractiseBase(BaseModel):
     about: Optional[str] = None
     content: Optional[str] = None
     tag: Optional[str] = None
+    cost: Optional[int] = None
 
 
 class PractiseCreate(PractiseBase):

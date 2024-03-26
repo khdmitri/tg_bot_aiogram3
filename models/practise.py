@@ -29,6 +29,7 @@ class Practise(Base):
     about: Mapped[str] = mapped_column(String, nullable=True)
     content: Mapped[str] = mapped_column(String, nullable=True)
     tag: Mapped[str] = mapped_column(String, nullable=True)
+    cost: Mapped[int] = mapped_column(Integer, nullable=True)
 
     def as_dict(self):
         return {
