@@ -23,3 +23,14 @@ async def read_blogs(
     """
     blogs = await crud_blog.get_multi(db, skip=skip, limit=limit)
     return blogs
+
+
+@router.get("/{post_id}", response_model=schemas.Blog)
+async def read_post(
+        post_id: int,
+        db: AsyncSession = Depends(deps.get_db_async),
+) -> Any:
+    """
+    Get a specific post by id.
+    """
+    return await crud_blog.get(db, id=post_id)
