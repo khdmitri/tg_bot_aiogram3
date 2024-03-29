@@ -10,3 +10,4 @@ from models.group import Group # Noqa
 from models.web_user import WebUser # Noqa
 from models.web_payment import WebPayment # noqa
 from models.sphere import Sphere, SphereUser, Depth # noqa
+from models.blog import Blog # noqa

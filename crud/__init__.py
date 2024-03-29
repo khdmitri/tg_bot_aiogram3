@@ -10,3 +10,4 @@ from .crud_web_payment import crud_web_payment
 from .crud_sphere import crud_sphere
 from .crud_sphere_user import crud_sphere_user
 from .crud_depth import crud_depth
+from .crud_blog import crud_blog

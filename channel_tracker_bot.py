@@ -51,7 +51,7 @@ dp = Dispatcher(
             host=config.FSM_HOST,
             password=config.FSM_PASSWORD,
             port=config.FSM_PORT,
-            db=0,
+            db=1,
         ),
         key_builder=DefaultKeyBuilder(with_bot_id=True),
     )
@@ -86,7 +86,7 @@ async def create_db_connections() -> None:
                 host=config.CACHE_HOST,
                 password=config.CACHE_PASSWORD,
                 port=config.CACHE_PORT,
-                database=0,
+                database=1,
             )
             dp["cache_pool"] = redis_pool
         except tenacity.RetryError:
@@ -135,10 +135,11 @@ def setup_handlers() -> None:
     # async def successful_payment(message: Message):
     #     await message.answer(text="Платеж успешен!")
 
-    dp.include_router(handlers.payment.prepare_router())
-    dp.include_router(handlers.user.prepare_router())
-    dp.include_router(handlers.admin.prepare_router())
-    dp.include_router(handlers.channel.prepare_router())
+    # dp.include_router(handlers.payment.prepare_router())
+    # dp.include_router(handlers.user.prepare_router())
+    # dp.include_router(handlers.admin.prepare_router())
+    # dp.include_router(handlers.channel.prepare_router())
+
     dp.include_router(handlers.blog.prepare_router())
 
 

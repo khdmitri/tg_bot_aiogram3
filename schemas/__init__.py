@@ -13,3 +13,4 @@ from .sphere import Sphere, SphereCreate, SphereUpdate
 from .sphere_user import SphereUser, SphereUserCreate, SphereUserUpdate
 from .depth import Depth, DepthCreate, DepthUpdate
 from .msg import Msg
+from .blog import Blog, BlogCreate, BlogUpdate
