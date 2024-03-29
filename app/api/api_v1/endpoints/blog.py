@@ -26,7 +26,7 @@ async def read_blogs(
 
 
 @router.get("/{post_id}", response_model=schemas.Blog)
-async def read_post(
+async def read_blog(
         post_id: int,
         db: AsyncSession = Depends(deps.get_db_async),
 ) -> Any:
