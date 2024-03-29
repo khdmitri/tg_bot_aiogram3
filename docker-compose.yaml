@@ -37,6 +37,7 @@ services:
       - tg_bot_network
     volumes:
       - ./alembic/versions:/app/alembic/versions
+      - blog:/app/app/media/blog
     command: >
       bash -c "alembic revision --autogenerate -m \"check db\" 
       && alembic upgrade head 
