@@ -40,6 +40,15 @@ async def get_media(
     return FileResponse(filepath, media_type="image/jpeg", filename=filename)
 
 
+@router.get("/get_blog_media/{filename}")
+async def get_media(
+        filename: str
+) -> Any:
+    ext = filename.split(".")
+    filepath = os.path.join(MEDIA_ROOT_DIR, "blog", filename)
+    return FileResponse(filepath, media_type=f"image/{ext[-1]}", filename=filename)
+
+
 @router.get("/get_logo")
 async def get_media() -> Any:
     filepath = os.path.join(MEDIA_ROOT_DIR, "logo_flat.png")
