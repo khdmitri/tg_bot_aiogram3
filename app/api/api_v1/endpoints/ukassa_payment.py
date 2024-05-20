@@ -45,7 +45,7 @@ async def ukassa_event(
         request: Request,
         db: AsyncSession = Depends(deps.get_db_async),
 ):
-    event_dict = request.json()
+    event_dict = await request.json()
     logger.info(f"UKASSA Event occurs: {event_dict}")
     try:
         notification_object = WebhookNotification(event_dict)
