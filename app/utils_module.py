@@ -94,7 +94,7 @@ def send_promotion_email(email_to: str) -> None:
     )
 
 
-def send_paid_email(email_to: str, telegram_link: str, disk_link) -> None:
+def send_paid_email(email_to: str, telegram_link: str, disk_link: str) -> None:
     project_name = settings.PROJECT_NAME
     project_link = settings.PROJECT_LINK
     link_tg_app = settings.LINK_TG_APP
@@ -103,7 +103,7 @@ def send_paid_email(email_to: str, telegram_link: str, disk_link) -> None:
     link_tg_bot = settings.LINK_TG_BOT
     logo = "https://postmasterhub.store/api/v2/document/get_logo/"
     link_site = settings.LINK_SITE
-    subject = f"{project_name} - Запрос на закрытый урок"
+    subject = f"{project_name} - Курс оплачен"
     with open(os.path.join(ROOT_DIR, settings.EMAIL_TEMPLATES_DIR, "paid.html")) as f:
         template_str = f.read()
     send_email(
