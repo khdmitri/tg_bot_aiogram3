@@ -6,6 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.requests import Request
 from starlette.responses import Response
 from yookassa.domain.notification import WebhookNotification
+from yookassa.domain.response import PaymentResponse
 
 import schemas
 from app.api import deps
@@ -49,16 +50,16 @@ async def ukassa_event(
     logger.info(f"UKASSA Event occurs: {event_dict}")
     try:
         notification_object = WebhookNotification(event_dict)
-        obj = notification_object.object
-        amount = 0
-        if obj.get("amount", None) and obj["amount"].get("value", None):
-            amount = int(obj["amount"]["value"])
+        obj: PaymentResponse = notification_object.object
+        try:
+            amount = int(obj.amount.value)
+        except ValueError:
+            amount = -1
         status = -1
-        if obj.get("status", None):
-            if obj["status"] in UkassaPaymentStatus.keys():
-                status = UkassaPaymentStatus[obj["status"]]
+        if obj.status in UkassaPaymentStatus.keys():
+            status = UkassaPaymentStatus[obj.status]
         logger.info(f"Payment amount={str(amount)}, Payment status={str(status)}")
-        schema_obj = UkassaEventSchema(id=obj.get("id", None), amount=amount, status=status)
+        schema_obj = UkassaEventSchema(id=obj.id, amount=amount, status=status)
         payment = await crud_web_payment.get(db, id=schema_obj.id)
         logger.info(f"schema_obj.id={str(schema_obj.id)}")
         if payment:
