@@ -46,6 +46,7 @@ async def ukassa_event(
         db: AsyncSession = Depends(deps.get_db_async),
 ):
     event_dict = request.json()
+    logger.info(f"UKASSA Event occurs: {event_dict}")
     try:
         notification_object = WebhookNotification(event_dict)
         obj = notification_object.object
@@ -56,20 +57,28 @@ async def ukassa_event(
         if obj.get("status", None):
             if obj["status"] in UkassaPaymentStatus.keys():
                 status = UkassaPaymentStatus[obj["status"]]
+        logger.info(f"Payment amount={str(amount)}, Payment status={str(status)}")
         schema_obj = UkassaEventSchema(id=obj.get("id", None), amount=amount, status=status)
         payment = await crud_web_payment.get(db, id=schema_obj.id)
+        logger.info(f"schema_obj.id={str(schema_obj.id)}")
         if payment:
+            logger.info("Payment found in DB >>>")
+            logger.info(f"Payment status={payment.status}, Payment amount={str(payment.amount)}")
             if payment.status != UkassaPaymentStatus['succeeded'] and schema_obj.amount >= payment.amount:
+                logger.info("Payment confirmed, updating DB")
                 payment.status = schema_obj.status
                 db.add(payment)
                 await db.commit()
                 await db.refresh(payment)
-                if payment.status != UkassaPaymentStatus['succeeded']:
+                if payment.status == UkassaPaymentStatus['succeeded']:
+                    logger.info("The invoice is PAID now, sending e-mail >>>")
                     send_paid_email(
                         payment.web_user.email,
                         payment.practise.channel_web_link,
                         payment.practise.disk_resource_link
                     )
+        else:
+            logger.info("Payment NOT found in DB ===")
     except Exception:
         logger.error(traceback.format_exc())
 
